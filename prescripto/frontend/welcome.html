@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Prescripto</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS reset & variables */
+        :root {
+            --primary: #0284c7;  /* Light Blue */
+            --secondary: #0369a1; /* Dark Blue */
+            --accent: #38bdf8;
+            --bg: #f8fafc;
+            --text: #0f172a;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, var(--bg) 0%, #e0f2fe 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            color: var(--text);
+        }
+        
+        .welcome-container {
+            text-align: center;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInBody 1s ease-out forwards;
+            animation-delay: 0.5s;
+        }
+
+        .logo-text {
+            font-size: 5rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin: 0;
+            letter-spacing: -2px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .logo-text::after {
+            content: '+';
+            color: var(--primary);
+            position: absolute;
+            top: -10px;
+            right: -30px;
+            font-size: 4rem;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        .tagline {
+            font-size: 1.5rem;
+            font-weight: 300;
+            color: #475569;
+            margin-top: 10px;
+            opacity: 0;
+            animation: fadeIn 1s ease-out forwards;
+            animation-delay: 1.5s;
+        }
+
+        /* Typewriter effect for tagline */
+        .typewriter {
+            overflow: hidden; /* Ensures the content is not revealed until the animation */
+            white-space: nowrap; /* Keeps the content on a single line */
+            margin: 0 auto; /* Gives that scrolling effect as the typing happens */
+            letter-spacing: 2px;
+            border-right: .15em solid var(--primary);
+            animation: 
+              typing 2s steps(40, end) forwards,
+              blink-caret .75s step-end infinite;
+            animation-delay: 1.5s;
+            width: 0;
+        }
+        
+        .btn-start {
+            margin-top: 3rem;
+            padding: 1rem 3rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(2, 132, 199, 0.4);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideUp 0.8s ease-out forwards;
+            animation-delay: 3s; /* Appears after tagline */
+        }
+
+        .btn-start:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(2, 132, 199, 0.5);
+        }
+
+        /* Abstract shapes background */
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            z-index: -1;
+            animation: float 10s infinite ease-in-out alternate;
+        }
+        .shape-1 {
+            width: 400px;
+            height: 400px;
+            background: rgba(56, 189, 248, 0.3);
+            top: -100px;
+            left: -100px;
+        }
+        .shape-2 {
+            width: 300px;
+            height: 300px;
+            background: rgba(2, 132, 199, 0.2);
+            bottom: -50px;
+            right: -50px;
+            animation-delay: -5s;
+        }
+
+        /* Animations */
+        @keyframes fadeInBody {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+        }
+        @keyframes slideUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: var(--primary); }
+        }
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(30px, 30px) rotate(10deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    
+    <div class="welcome-container">
+        <h1 class="logo-text">PRESCRIPTO</h1>
+        <div style="height: 40px; display: flex; justify-content: center;">
+            <p class="tagline typewriter">never miss a dose</p>
+        </div>
+        <a href="/login" class="btn-start">Get Started</a>
+    </div>
+
+    <script>
+        // Stop the blinking caret after typing is done for a cleaner look
+        setTimeout(() => {
+            document.querySelector('.typewriter').style.borderRightColor = 'transparent';
+        }, 3500);
+    </script>
+</body>
+</html>

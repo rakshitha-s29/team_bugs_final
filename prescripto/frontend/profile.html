@@ -125,55 +125,86 @@
                         <img src="https://ui-avatars.com/api/?name=John+Doe&background=e0f2fe&color=0284c7&size=200"
                             alt="John Doe" class="profile-img-large"
                             style="width: 200px; height: 200px; border-radius: 50%; border: 4px solid var(--clr-light-blue);">
-                        <div class="info" style="flex: 1; font-size: 1.2rem;">
-                            <h2 style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--clr-dark-blue);">John Doe
-                            </h2>
-
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem;">
-                                <div>
-                                    <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.2rem;" data-i18n="labelAge">Age</p>
-                                    <p><strong>45 Years</strong></p>
+                        <div class="info" style="flex: 1; font-size: 1.2rem; width: 100%;">
+                            <div id="profile-display" style="display: flex; flex-direction: column;">
+                                <h2 id="profile-display-name" style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--clr-dark-blue);">Loading...</h2>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem;">
+                                    <div>
+                                        <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.2rem;" data-i18n="labelAge">Age</p>
+                                        <p><strong id="profile-display-age">-</strong></p>
+                                    </div>
+                                    <div>
+                                        <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.2rem;" data-i18n="labelGender">Gender</p>
+                                        <p><strong id="profile-display-gender">-</strong></p>
+                                    </div>
+                                    <div>
+                                        <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.2rem;" data-i18n="labelBloodGroup">Blood Group</p>
+                                        <p><strong id="profile-display-blood">-</strong></p>
+                                    </div>
+                                    <div>
+                                        <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.2rem;" data-i18n="labelHeightWeight">Height / Weight</p>
+                                        <p><strong id="profile-display-height-weight">-</strong></p>
+                                    </div>
+                                </div>
+                                <div style="margin-top: 2rem;">
+                                    <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.5rem;" data-i18n="labelConditions">Known Conditions</p>
+                                    <div id="profile-display-conditions" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                    </div>
+                                </div>
+                                <div style="margin-top: 2rem; margin-bottom: 2rem;">
+                                    <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.5rem;" data-i18n="labelEmergency">Emergency Contact</p>
+                                    <p><strong id="profile-display-emergency">-</strong></p>
                                 </div>
                                 <div>
-                                    <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.2rem;" data-i18n="labelGender">Gender
-                                    </p>
-                                    <p><strong>Male</strong></p>
-                                </div>
-                                <div>
-                                    <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.2rem;">Blood
-                                        Group</p>
-                                    <p><strong>O Positive (O+)</strong></p>
-                                </div>
-                                <div>
-                                    <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.2rem;">Height
-                                        / Weight</p>
-                                    <p><strong>178 cm / 82 kg</strong></p>
+                                    <button class="btn-primary" id="edit-profile-btn"><i class="fa-solid fa-pen-to-square"></i> <span data-i18n="btnEditProfile">Edit Profile Information</span></button>
                                 </div>
                             </div>
 
-                            <div style="margin-top: 2rem;">
-                                <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.5rem;">Known
-                                    Conditions</p>
-                                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                                    <span
-                                        style="background: var(--clr-light-blue); color: var(--clr-blue); padding: 0.5rem 1rem; border-radius: 20px; font-weight: 600;">Hypertension</span>
-                                    <span
-                                        style="background: var(--clr-light-blue); color: var(--clr-blue); padding: 0.5rem 1rem; border-radius: 20px; font-weight: 600;">Mild
-                                        Asthma</span>
+                            <form id="profile-edit-form" style="display: none; background: #f8fafc; padding: 2rem; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 2rem;">
+                                <h3 style="margin-bottom: 1.5rem; color: var(--clr-dark-blue);">Edit Profile</h3>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                                    <div class="input-group">
+                                        <label style="display: block; font-size: 0.9rem; color: var(--clr-gray); margin-bottom: 0.5rem;">Full Name</label>
+                                        <input type="text" id="edit-name" style="width: 100%; padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 6px;">
+                                    </div>
+                                    <div class="input-group">
+                                        <label style="display: block; font-size: 0.9rem; color: var(--clr-gray); margin-bottom: 0.5rem;">Age</label>
+                                        <input type="number" id="edit-age" style="width: 100%; padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 6px;">
+                                    </div>
+                                    <div class="input-group">
+                                        <label style="display: block; font-size: 0.9rem; color: var(--clr-gray); margin-bottom: 0.5rem;">Gender</label>
+                                        <select id="edit-gender" style="width: 100%; padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 6px;">
+                                            <option value="">Select</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="input-group">
+                                        <label style="display: block; font-size: 0.9rem; color: var(--clr-gray); margin-bottom: 0.5rem;">Blood Group</label>
+                                        <input type="text" id="edit-blood" placeholder="e.g. O+" style="width: 100%; padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 6px;">
+                                    </div>
+                                    <div class="input-group">
+                                        <label style="display: block; font-size: 0.9rem; color: var(--clr-gray); margin-bottom: 0.5rem;">Height / Weight</label>
+                                        <input type="text" id="edit-height-weight" placeholder="175 cm / 70 kg" style="width: 100%; padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 6px;">
+                                    </div>
+                                    <div class="input-group" style="grid-column: span 2;">
+                                        <label style="display: block; font-size: 0.9rem; color: var(--clr-gray); margin-bottom: 0.5rem;">Known Conditions (Comma separated)</label>
+                                        <input type="text" id="edit-conditions" placeholder="Hypertension, Asthma" style="width: 100%; padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 6px;">
+                                    </div>
+                                    <div class="input-group" style="grid-column: span 2;">
+                                        <label style="display: block; font-size: 0.9rem; color: var(--clr-gray); margin-bottom: 0.5rem;">Emergency Contact</label>
+                                        <input type="text" id="edit-emergency" placeholder="Jane Doe (Wife) - 555-1234" style="width: 100%; padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 6px;">
+                                    </div>
                                 </div>
-                            </div>
-
-                            <div style="margin-top: 2rem;">
-                                <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.5rem;">Emergency
-                                    Contact</p>
-                                <p><strong>Jane Doe (Wife) - +1 (555) 123-4567</strong></p>
-                            </div>
-
-                            <button class="btn-primary"
-                                    class="fa-solid fa-pen-to-square"></i> <span data-i18n="btnEditProfile">Edit Profile Information</span></button>
+                                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                                    <button type="submit" class="btn-primary" id="save-edit-btn" style="background: var(--clr-blue); padding: 0.8rem 1.5rem; border: none; color: white; border-radius: 6px; cursor: pointer;">Save Changes</button>
+                                    <button type="button" class="btn-primary" id="cancel-edit-btn" style="background: white; border: 1px solid #ef4444; color: #ef4444; padding: 0.8rem 1.5rem; border-radius: 6px; cursor: pointer;">Cancel</button>
+                                </div>
+                            </form>
                                     
                             <div id="link-account-section" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--clr-light-blue);">
-                                <h3 style="margin-bottom: 1rem; color: var(--clr-dark-blue);">Link Account</h3>
+                                <h3 style="margin-bottom: 1rem; color: var(--clr-dark-blue);" data-i18n="linkAccount">Link Account</h3>
                                 <button class="btn-primary" id="google-auth-btn" style="background: white; color: #333; border: 1px solid #ccc; padding: 0.5rem 1rem; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem; border-radius: 4px; cursor: pointer; font-weight: 500;">
                                     <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" style="width: 20px; height: 20px;">
                                         <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
@@ -187,7 +218,7 @@
                             </div>
                             
                             <div id="linked-account-info" style="display: none; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--clr-light-blue);">
-                                <h3 style="margin-bottom: 1rem; color: var(--clr-dark-blue);">Linked Account</h3>
+                                <h3 style="margin-bottom: 1rem; color: var(--clr-dark-blue);" data-i18n="linkedAccount">Linked Account</h3>
                                 <div style="display: flex; align-items: center; gap: 1rem; background: #f8fafc; padding: 1rem; border-radius: 12px; border: 1px solid #e2e8f0;">
                                     <i class="fa-brands fa-google" style="color: #ea4335; font-size: 1.5rem;"></i>
                                     <div>
@@ -197,6 +228,19 @@
                                     <button class="btn-primary" id="btn-logout" style="margin-left: auto; background: #ef4444; padding: 0.5rem 1rem; font-size: 0.9rem;">
                                         <i class="fa-solid fa-arrow-right-from-bracket"></i> Unlink Log Out
                                     </button>
+                                </div>
+                            </div>
+                            <div id="customer-support-section" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--clr-light-blue);">
+                                <h3 style="margin-bottom: 1rem; color: var(--clr-dark-blue);">Customer Support</h3>
+                                <div style="display: flex; align-items: center; gap: 1rem; background: #eff6ff; padding: 1.5rem; border-radius: 12px; border: 1px solid #bfdbfe;">
+                                    <i class="fa-solid fa-headset" style="color: var(--clr-blue); font-size: 2rem;"></i>
+                                    <div>
+                                        <p style="font-weight: 600; color: var(--clr-dark-blue);">Need help with your account? We're here 24/7.</p>
+                                        <p style="color: var(--clr-gray); font-size: 0.95rem; margin-top: 0.25rem;">Email us at: <a href="mailto:support@prescripto.com" style="color: var(--clr-blue); text-decoration: none; font-weight: 500;">support@prescripto.com</a></p>
+                                    </div>
+                                    <a href="mailto:support@prescripto.com" class="btn-primary" style="margin-left: auto; text-decoration: none; background: white; color: var(--clr-blue); border: 1px solid var(--clr-blue);">
+                                        Contact Support
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -244,7 +288,7 @@
                         <!-- Profile Panel -->
                         <div class="panel profile-panel">
                             <div class="panel-header">
-                                <h3>Patient Profile</h3>
+                                <h3 data-i18n="profileConfigTitle">Patient Profile</h3>
                             </div>
                             <div class="profile-details">
                                 <img src="https://ui-avatars.com/api/?name=John+Doe&background=e0f2fe&color=0284c7&size=100"

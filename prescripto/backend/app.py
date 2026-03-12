@@ -1,5 +1,7 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, session, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
+from functools import wraps
 import os
 import re
 import pytesseract
@@ -15,94 +17,243 @@ pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tessera
 GOOGLE_CLIENT_ID = "725427460622-eglmp3igtau3rb4vai1ag47u9cr42s4g.apps.googleusercontent.com"
 
 # Create Flask app
-# Point static folder and template folder to the frontend directory so we don't need a separate static folder
 frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'frontend'))
 app = Flask(__name__, static_folder=frontend_dir, static_url_path='')
 
+app.secret_key = 'prescripto_super_secret_key_change_in_production'
+
 # --- DATABASE CONFIGURATION ---
 basedir = os.path.abspath(os.path.dirname(__file__))
-# Set path for the SQLite database file (app.db) inside the backend folder
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'app.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Initialize the database
 db = SQLAlchemy(app)
 
 # --- DATABASE MODELS ---
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    google_id = db.Column(db.String(100), unique=True, nullable=True)
+    email = db.Column(db.String(120), unique=True, nullable=True)
+    username = db.Column(db.String(100), unique=True, nullable=True)
+    password_hash = db.Column(db.String(255), nullable=True)
+    phone_number = db.Column(db.String(20), unique=True, nullable=True)
+    
+    name = db.Column(db.String(100), nullable=True)
+    age = db.Column(db.Integer, nullable=True)
+    gender = db.Column(db.String(20), nullable=True)
+    blood_group = db.Column(db.String(10), nullable=True)
+    height_weight = db.Column(db.String(50), nullable=True)
+    conditions = db.Column(db.String(255), nullable=True)
+    emergency_contact = db.Column(db.String(100), nullable=True)
+    language_setting = db.Column(db.String(10), default='en')
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "email": self.email,
+            "name": self.name,
+            "age": self.age,
+            "gender": self.gender,
+            "blood_group": self.blood_group,
+            "height_weight": self.height_weight,
+            "conditions": self.conditions,
+            "emergency_contact": self.emergency_contact,
+            "language_setting": self.language_setting
+        }
+
 class ScheduleItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     medicine_name = db.Column(db.String(100), nullable=False)
-    time_of_day = db.Column(db.String(50), nullable=False) # e.g., 'morning', 'night'
+    time_of_day = db.Column(db.String(50), nullable=False)
     instructions = db.Column(db.Text, nullable=True)
 
     def to_dict(self):
         return {
             "id": self.id,
+            "user_id": self.user_id,
             "medicine_name": self.medicine_name,
             "time_of_day": self.time_of_day,
             "instructions": self.instructions
-        }
-
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    google_id = db.Column(db.String(100), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    name = db.Column(db.String(100), nullable=False)
-    age = db.Column(db.Integer, nullable=True)
-    gender = db.Column(db.String(20), nullable=True)
-    blood_group = db.Column(db.String(10), nullable=True)
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "google_id": self.google_id,
-            "email": self.email,
-            "name": self.name,
-            "age": self.age,
-            "gender": self.gender,
-            "blood_group": self.blood_group
         }
 
 # Create the database tables if they don't exist
 with app.app_context():
     db.create_all()
 
+# --- AUTH DECORATOR ---
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            return redirect(url_for('login_page'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+# --- HTML ROUTES ---
 @app.route('/')
 def home():
-    """Serve the landing home page"""
-    return send_from_directory(frontend_dir, 'home.html')
+    """Serve the animated welcome landing page"""
+    if 'user_id' in session:
+        return redirect(url_for('index'))
+    return send_from_directory(frontend_dir, 'welcome.html')
+
+@app.route('/login')
+def login_page():
+    """Serve the login/registration page"""
+    if 'user_id' in session:
+        return redirect(url_for('index'))
+    return send_from_directory(frontend_dir, 'login.html')
 
 @app.route('/dashboard')
+@login_required
 def index():
-    """Serve the main frontend page index.html"""
     return send_from_directory(frontend_dir, 'index.html')
 
 @app.route('/upload')
+@login_required
 def upload():
-    """Serve the upload prescription page"""
     return send_from_directory(frontend_dir, 'upload.html')
 
 @app.route('/medicines')
+@login_required
 def medicines():
-    """Serve the medicines list page"""
     return send_from_directory(frontend_dir, 'medicines.html')
 
 @app.route('/history')
+@login_required
 def history():
-    """Serve the prescription history page"""
     return send_from_directory(frontend_dir, 'history.html')
 
 @app.route('/profile')
+@login_required
 def profile():
-    """Serve the profile page"""
     return send_from_directory(frontend_dir, 'profile.html')
 
 @app.route('/settings')
+@login_required
 def settings():
-    """Serve the settings page"""
     return send_from_directory(frontend_dir, 'settings.html')
 
+# --- AUTHENTICATION API ROUTES ---
+
+@app.route('/api/register', methods=['POST'])
+def register():
+    """Register a new user via username and password"""
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+    name = data.get('name', username)
+    email = data.get('email', None)
+    
+    if not username or not password:
+        return jsonify({"success": False, "message": "Username and password required"}), 400
+        
+    user = User.query.filter_by(username=username).first()
+    if user:
+        return jsonify({"success": False, "message": "Username already exists"}), 400
+        
+    hashed_pw = generate_password_hash(password)
+    new_user = User(username=username, email=email, password_hash=hashed_pw, name=name)
+    db.session.add(new_user)
+    db.session.commit()
+    
+    session['user_id'] = new_user.id
+    return jsonify({"success": True, "message": "Registered successfully", "user": new_user.to_dict()}), 201
+
+@app.route('/api/login', methods=['POST'])
+def submit_login():
+    """Login a user via username/phone/email and password"""
+    data = request.json
+    identifier = data.get('identifier') # Could be username, email, or phone
+    password = data.get('password')
+    
+    if not identifier or not password:
+        return jsonify({"success": False, "message": "Credentials required"}), 400
+    
+    # Try finding by username, email, or phone
+    user = User.query.filter((User.username == identifier) | (User.email == identifier) | (User.phone_number == identifier)).first()
+    
+    if user and user.password_hash and check_password_hash(user.password_hash, password):
+        session['user_id'] = user.id
+        return jsonify({"success": True, "message": "Logged in successfully", "user": user.to_dict()}), 200
+        
+    return jsonify({"success": False, "message": "Invalid credentials"}), 401
+
+@app.route('/api/logout', methods=['POST', 'GET'])
+def logout():
+    session.pop('user_id', None)
+    return redirect(url_for('login_page'))
+
+# --- USER DATA API ROUTES ---
+
+@app.route('/api/me', methods=['GET'])
+@login_required
+def get_current_user():
+    """Fetch profile data for logged in user"""
+    user = User.query.get(session['user_id'])
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    return jsonify({"success": True, "user": user.to_dict()}), 200
+
+@app.route('/api/profile', methods=['POST'])
+@login_required
+def update_profile():
+    """Update user profile info"""
+    data = request.json
+    user = User.query.get(session['user_id'])
+    if not user:
+        return jsonify({"success": False, "message": "User not found"}), 404
+        
+    # Update fields if provided
+    if 'name' in data: user.name = data['name']
+    if 'age' in data: user.age = data['age']
+    if 'gender' in data: user.gender = data['gender']
+    if 'blood_group' in data: user.blood_group = data['blood_group']
+    if 'height_weight' in data: user.height_weight = data['height_weight']
+    if 'conditions' in data: user.conditions = data['conditions']
+    if 'emergency_contact' in data: user.emergency_contact = data['emergency_contact']
+    if 'language_setting' in data: user.language_setting = data['language_setting']
+    
+    db.session.commit()
+    return jsonify({"success": True, "message": "Profile updated", "user": user.to_dict()}), 200
+
+@app.route('/get_medicines', methods=['GET'])
+@login_required
+def get_medicines():
+    """Fetch all saved medicines for logged in user"""
+    all_items = ScheduleItem.query.filter_by(user_id=session['user_id']).all()
+    return jsonify([item.to_dict() for item in all_items])
+
+@app.route('/save_medicine', methods=['POST'])
+@login_required
+def save_medicine():
+    """Save a single medicine schedule for the logged in user"""
+    data = request.json
+    medicine = data.get('medicine_name')
+    time_of_day = data.get('time_of_day')
+    instructions = data.get('instructions', '')
+
+    if not medicine or not time_of_day:
+        return jsonify({"error": "Missing medicine_name or time_of_day"}), 400
+
+    new_item = ScheduleItem(
+        user_id=session['user_id'],
+        medicine_name=medicine, 
+        time_of_day=time_of_day,
+        instructions=instructions
+    )
+    
+    db.session.add(new_item)
+    db.session.commit()
+
+    return jsonify({"message": "Medicine saved successfully!", "item": new_item.to_dict()}), 201
+
+# --- OCR & EXTERNAL API ROUTES ---
+
 @app.route('/upload_prescription', methods=['POST'])
+@login_required
 def upload_prescription():
     """Handle image upload, extract text via OCR, and return parsed medicines."""
     if 'file' not in request.files:
@@ -113,26 +264,17 @@ def upload_prescription():
         return jsonify({"error": "No selected file"}), 400
         
     try:
-        # Load the image
         img = Image.open(file.stream)
-        
-        # Extract text using Tesseract OCR
         extracted_text = pytesseract.image_to_string(img)
         
-        # Simple heuristic to determine if it's a valid prescription
-        # We look for common medical or dosage keywords
         keywords = ['mg', 'ml', 'tablet', 'capsule', 'syrup', 'dr.', 'dr', 'doctor', 'clinic', 'hospital', 'rx', 'prescription', 'take', 'daily']
         text_lower = extracted_text.lower()
         
-        # If text is too short or doesn't contain any keywords
         if len(text_lower.strip()) < 10 or not any(kw in text_lower for kw in keywords):
             return jsonify({
                 "error": "No prescription found in the given image, make sure you have uploaded the precise prescription. Please try again with a clear image."
             }), 400
             
-        # Parse the extracted text to find medicines.
-        # This is a very basic parser assuming format: "MedicineName Xmg Instruction"
-        # Since OCR text can be messy, we'll try to extract lines that look like medicines
         results = []
         lines = extracted_text.split('\n')
         
@@ -143,9 +285,7 @@ def upload_prescription():
                 
             line_lower = line.lower()
             
-            # Simple heuristic for a medicine line: contains a dosage (like 500mg) or common instruction
             if 'mg' in line_lower or 'ml' in line_lower or 'tablet' in line_lower:
-                # Default values
                 purpose = "Medicine"
                 time = "General"
                 
@@ -164,12 +304,11 @@ def upload_prescription():
                     time = "Night"
                     
                 results.append({
-                    "name": line, # Use the whole line as name to capture full context
+                    "name": line,
                     "purpose": purpose,
                     "time": time
                 })
         
-        # If we successfully read text but couldn't parse specific medicines based on our heuristics
         if not results:
              return jsonify({
                 "error": "Text was found but no recognizable medicines could be extracted. Please ensure the prescription is legible."
@@ -181,6 +320,7 @@ def upload_prescription():
         return jsonify({"error": f"Failed to process image: {str(e)}"}), 500
 
 @app.route('/generate_schedule', methods=['POST'])
+@login_required
 def generate_schedule():
     """
     API endpoint to process prescription instructions
@@ -189,7 +329,6 @@ def generate_schedule():
     data = request.json
     instructions = data.get('instructions', '')
     
-    # Initialize the required schedule dictionary with 4 time slots
     schedule = {
         "morning": [],
         "afternoon": [],
@@ -200,7 +339,6 @@ def generate_schedule():
     if not instructions:
         return jsonify(schedule)
 
-    # Process instructions line by line
     lines = instructions.split('\n')
     
     for line in lines:
@@ -210,41 +348,31 @@ def generate_schedule():
             
         lower_line = line.lower()
         
-        # Determine the medicine name
-        # We find all matching keywords and remove them to isolate the medicine name
         keywords = ["after breakfast", "after lunch", "after dinner", "after food", "before sleep", "twice daily"]
-        
         matched_keywords = [kw for kw in keywords if kw in lower_line]
         
-        # Extract medicine name by removing all keywords from the line
         medicine = line
         for kw in matched_keywords:
             medicine = re.sub(rf'(?i){re.escape(kw)}', '', medicine)
             
-        # Extract time if present
         time_match = re.search(r'\b(1[0-2]|0?[1-9])(?::([0-5][0-9]))?\s*(am|pm)\b', lower_line)
         if time_match:
-            # Remove the time and optionally "at" before it
             medicine = re.sub(rf'(?i)(?:\bat\s+)?{re.escape(time_match.group(0))}', '', medicine)
             
-        # Clean up any extra spaces or punctuation
         medicine = medicine.strip(' ,-:')
             
         if not medicine:
             continue
 
-        # Keywords detection based on the user's requirements
         is_morning = "after breakfast" in lower_line
         is_afternoon = "after lunch" in lower_line or "after food" in lower_line or "twice daily" in lower_line
         is_evening = "after dinner" in lower_line or "twice daily" in lower_line
         is_night = "before sleep" in lower_line
         
-        # Time detection based on extracted time
         if time_match:
             hour = int(time_match.group(1))
             ampm = time_match.group(3)
             
-            # Convert to 24-hour format
             if ampm == 'pm' and hour != 12:
                 hour += 12
             elif ampm == 'am' and hour == 12:
@@ -259,7 +387,6 @@ def generate_schedule():
             else:
                 is_night = True
         
-        # Append medicine to the correct lists
         if is_morning:
             schedule["morning"].append(medicine)
         if is_afternoon:
@@ -269,38 +396,7 @@ def generate_schedule():
         if is_night:
             schedule["night"].append(medicine)
             
-        # If no explicit timing was found, we add it to a generic slot or just ignore. 
-        # For this application, we only schedule it if it matches the text.
-        
     return jsonify(schedule)
-
-@app.route('/get_medicines', methods=['GET'])
-def get_medicines():
-    """Fetch all saved medicines from the database"""
-    all_items = ScheduleItem.query.all()
-    return jsonify([item.to_dict() for item in all_items])
-
-@app.route('/save_medicine', methods=['POST'])
-def save_medicine():
-    """Save a single medicine schedule to the database"""
-    data = request.json
-    medicine = data.get('medicine_name')
-    time_of_day = data.get('time_of_day')
-    instructions = data.get('instructions', '')
-
-    if not medicine or not time_of_day:
-        return jsonify({"error": "Missing medicine_name or time_of_day"}), 400
-
-    new_item = ScheduleItem(
-        medicine_name=medicine, 
-        time_of_day=time_of_day,
-        instructions=instructions
-    )
-    
-    db.session.add(new_item)
-    db.session.commit()
-
-    return jsonify({"message": "Medicine saved successfully!", "item": new_item.to_dict()}), 201
 
 @app.route('/api/google-login', methods=['POST'])
 def google_login():
@@ -311,7 +407,6 @@ def google_login():
         return jsonify({"success": False, "message": "Missing access token"}), 400
 
     try:
-        # Fetch user profile using People API
         headers = {'Authorization': f'Bearer {access_token}'}
         people_api_url = 'https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,birthdays,genders'
         response = requests.get(people_api_url, headers=headers)
@@ -321,7 +416,6 @@ def google_login():
             
         profile_data = response.json()
         
-        # Extract basic data
         google_user_id = profile_data.get('resourceName', '').replace('people/', '')
         email = profile_data.get('emailAddresses', [{}])[0].get('value', '')
         name = profile_data.get('names', [{}])[0].get('displayName', '')
@@ -329,7 +423,6 @@ def google_login():
         if not email or not google_user_id:
             return jsonify({"success": False, "message": "Could not extract essential profile info"}), 400
 
-        # Extract extra data: Gender
         gender = None
         genders_list = profile_data.get('genders', [])
         if genders_list:
@@ -341,7 +434,6 @@ def google_login():
             else:
                 gender = raw_gender.capitalize()
                 
-        # Extract extra data: Age Calculation
         age = None
         birthdays_list = profile_data.get('birthdays', [])
         for b in birthdays_list:
@@ -353,21 +445,24 @@ def google_login():
             if year and month and day:
                 today = datetime.today()
                 age = today.year - year - ((today.month, today.day) < (month, day))
-                break # Just use the first valid birthday found
+                break
 
-        # Handle database logic
         user = User.query.filter_by(google_id=google_user_id).first()
         if not user:
-            user = User(
-                email=email, 
-                name=name, 
-                google_id=google_user_id,
-                gender=gender,
-                age=age
-            )
+            # Also check if user exists by email, to link accounts
+            user = User.query.filter_by(email=email).first()
+            if user:
+                user.google_id = google_user_id
+            else:
+                user = User(
+                    email=email, 
+                    name=name, 
+                    google_id=google_user_id,
+                    gender=gender,
+                    age=age
+                )
             db.session.add(user)
         else:
-            # Update existing user if they provided new info
             updated = False
             if gender and not user.gender:
                 user.gender = gender
@@ -379,6 +474,9 @@ def google_login():
                 db.session.add(user)
         
         db.session.commit()
+
+        # Set Session
+        session['user_id'] = user.id
 
         return jsonify({
             "success": True, 
@@ -392,5 +490,4 @@ def google_login():
         return jsonify({"success": False, "message": str(e)}), 500
 
 if __name__ == '__main__':
-    # Run the Flask app
     app.run(debug=True, port=5000)
