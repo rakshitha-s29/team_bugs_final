@@ -243,29 +243,202 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Voice Input Simulation
+    // --- Centralized Data Loading & Sync ---
+    async function loadDashboardData() {
+        try {
+            const response = await fetch('/get_medicines');
+            const data = await response.json();
+            
+            // Update Medicine History & Details Table (History Page)
+            const historyTableBody = document.querySelector('.medicine-table tbody');
+            const historyDateHeader = document.getElementById('history-date') || document.getElementById('history-header-date');
+            
+            if (historyDateHeader) {
+                const now = new Date();
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                historyDateHeader.textContent = now.toLocaleDateString('en-US', options);
+            }
+
+            if (historyTableBody) {
+                historyTableBody.innerHTML = '';
+                data.forEach(item => {
+                    const row = document.createElement('tr');
+                    const addedDate = new Date().toLocaleDateString();
+                    row.innerHTML = `
+                        <td style="padding: 1.5rem;"><strong>${item.medicine_name}</strong></td>
+                        <td style="padding: 1.5rem;">${item.instructions || 'Prescribed medicine'}</td>
+                        <td style="padding: 1.5rem; text-align: center;">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                                <span>${addedDate}</span>
+                                <span class="status-badge active" style="font-size: 0.9rem; padding: 0.3rem 0.8rem;">Active</span>
+                            </div>
+                        </td>
+                    `;
+                    historyTableBody.appendChild(row);
+                });
+            }
+
+            // Update Today's Intake Tracker (Medicines & Dashboard Pages)
+            const trackerList = document.querySelector('.tracker-list');
+            if (trackerList) {
+                trackerList.innerHTML = '';
+                data.forEach(item => {
+                    const trackerItem = document.createElement('div');
+                    trackerItem.className = 'tracker-item';
+                    trackerItem.style.cssText = trackerList.classList.contains('grid') ? 'padding: 1.5rem; border: 2px solid var(--clr-light-blue);' : '';
+                    
+                    const timeBadge = item.time_of_day.charAt(0).toUpperCase() + item.time_of_day.slice(1);
+                    trackerItem.innerHTML = `
+                        <div class="tracker-info">
+                            <h4 style="font-size: 1.3rem; margin-bottom: 0.5rem;">${item.medicine_name} <span class="badge-time" style="font-size: 0.9rem;">${timeBadge}</span></h4>
+                            <p style="font-size: 1.1rem;">${item.instructions || 'Take as directed'}</p>
+                        </div>
+                        <label class="custom-checkbox">
+                            <input type="checkbox" class="intake-checkbox">
+                            <span class="checkmark" style="height: 30px; width: 30px;"></span>
+                        </label>
+                    `;
+                    trackerList.appendChild(trackerItem);
+                });
+            }
+            
+            // Update Stats
+            const medicineCountEl = document.querySelector('.stat-card:nth-child(2) .stat-number');
+            if (medicineCountEl) {
+                medicineCountEl.textContent = data.length;
+            }
+
+        } catch (error) {
+            console.error('Error loading dashboard data:', error);
+        }
+    }
+
+    // Call on load
+    loadDashboardData();
+
+    // --- Voice Input Integration ---
     const voiceBtn = document.getElementById('voice-btn');
     const instructionInput = document.getElementById('instruction-input');
 
-    voiceBtn.addEventListener('click', () => {
-        if (voiceBtn.classList.contains('recording')) {
-            voiceBtn.classList.remove('recording');
-            voiceBtn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
-        } else {
-            voiceBtn.classList.add('recording');
-            voiceBtn.innerHTML = '<i class="fa-solid fa-stop"></i>';
-            instructionInput.placeholder = "Listening...";
+    if (voiceBtn && instructionInput) {
+        const recognition = 'webkitSpeechRecognition' in window ? new webkitSpeechRecognition() : null;
+        
+        if (recognition) {
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            
+            recognition.onstart = () => {
+                voiceBtn.classList.add('recording');
+                voiceBtn.innerHTML = '<i class="fa-solid fa-microphone-lines fa-beat" style="color: #ef4444;"></i>';
+            };
 
-            // Simulating speech to text
-            setTimeout(() => {
-                if (voiceBtn.classList.contains('recording')) {
-                    voiceBtn.classList.remove('recording');
-                    voiceBtn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
-                    instructionInput.value = "Take Paracetamol in the morning, Amoxicillin in the afternoon, and Vitamin D at night before bed.";
-                }
-            }, 3000);
+            recognition.onend = () => {
+                voiceBtn.classList.remove('recording');
+                voiceBtn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                instructionInput.value = transcript;
+            };
+
+            voiceBtn.addEventListener('click', () => {
+                recognition.start();
+            });
+        } else {
+            console.warn('Speech recognition not supported in this browser.');
         }
-    });
+    }
+
+    // --- Profile Editing Logic ---
+    const btnEditProfile = document.getElementById('btn-edit-profile');
+    const btnSaveProfile = document.getElementById('btn-save-profile');
+    const btnCancelEdit = document.getElementById('btn-cancel-edit');
+    const editForm = document.getElementById('edit-profile-form');
+    const profileActionButtons = document.getElementById('profile-action-buttons');
+
+    if (btnEditProfile && editForm) {
+        btnEditProfile.addEventListener('click', () => {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            document.getElementById('edit-name').value = user.name || '';
+            document.getElementById('edit-age').value = user.age || '';
+            document.getElementById('edit-gender').value = user.gender || '';
+            document.getElementById('edit-conditions').value = user.known_conditions || '';
+            document.getElementById('edit-emergency').value = user.emergency_contact || '';
+            
+            editForm.style.display = 'block';
+            profileActionButtons.style.display = 'none';
+        });
+
+        btnCancelEdit.addEventListener('click', () => {
+            editForm.style.display = 'none';
+            profileActionButtons.style.display = 'flex';
+        });
+
+        btnSaveProfile.addEventListener('click', async () => {
+            const user = JSON.parse(localStorage.getItem('user') || '{"email": "anonymous@example.com", "name": "Anonymous"}');
+            const updatedData = {
+                email: user.email,
+                name: document.getElementById('edit-name').value,
+                age: document.getElementById('edit-age').value,
+                gender: document.getElementById('edit-gender').value,
+                known_conditions: document.getElementById('edit-conditions').value,
+                emergency_contact: document.getElementById('edit-emergency').value
+            };
+
+            try {
+                const response = await fetch('/api/update-profile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatedData)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    localStorage.setItem('user', JSON.stringify(result.user));
+                    alert('Profile updated successfully!');
+                    window.location.reload(); // Refresh to update all UI elements
+                } else {
+                    alert('Failed to update profile: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                alert('An error occurred while saving.');
+            }
+        });
+    }
+
+    // Hydrate Profile Details if on profile page
+    const displayAge = document.getElementById('display-age');
+    if (displayAge) {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (user.name) {
+            const displayName = document.getElementById('display-name');
+            if (displayName) displayName.textContent = user.name;
+            const profileInitials = document.querySelector('.profile-initials');
+            if (profileInitials) {
+                const names = user.name.split(' ');
+                profileInitials.textContent = names.map(n => n[0]).join('').toUpperCase().substring(0, 2);
+            }
+        }
+        if (user.age) displayAge.textContent = user.age + ' Years';
+        if (user.gender) document.getElementById('display-gender').textContent = user.gender;
+        if (user.blood_group) document.getElementById('display-blood').textContent = user.blood_group;
+        if (user.emergency_contact) {
+            const displayEmergency = document.getElementById('display-emergency');
+            if (displayEmergency) displayEmergency.textContent = user.emergency_contact;
+        }
+        
+        const conditionsContainer = document.getElementById('display-conditions');
+        if (conditionsContainer && user.known_conditions) {
+            conditionsContainer.innerHTML = '';
+            user.known_conditions.split(',').forEach(cond => {
+                const span = document.createElement('span');
+                span.style.cssText = 'background: var(--clr-light-blue); color: var(--clr-blue); padding: 0.5rem 1rem; border-radius: 20px; font-weight: 600;';
+                span.textContent = cond.trim();
+                conditionsContainer.appendChild(span);
+            });
+        }
+    }
 
     // Generate Schedule Simulation
     const generateBtn = document.getElementById('generate-btn');
@@ -308,11 +481,34 @@ document.addEventListener('DOMContentLoaded', () => {
         })
             .then(response => response.json())
             .then(data => {
-                const formatList = (arr) => arr && arr.length > 0 ? arr.map(item => `<li>${item}</li>`).join('') : '<li style="color:#94a3b8;">None</li>';
+                morningList.innerHTML = '';
+                afternoonList.innerHTML = '';
+                nightList.innerHTML = '';
 
-                morningList.innerHTML = formatList(data.morning);
-                afternoonList.innerHTML = formatList(data.afternoon || []);
-                nightList.innerHTML = formatList(data.night || []);
+                if (data.morning) {
+                    data.morning.forEach(med => {
+                        const li = document.createElement('li');
+                        li.textContent = med;
+                        morningList.appendChild(li);
+                    });
+                }
+                if (data.afternoon) {
+                    data.afternoon.forEach(med => {
+                        const li = document.createElement('li');
+                        li.textContent = med;
+                        afternoonList.appendChild(li);
+                    });
+                }
+                if (data.night) {
+                    data.night.forEach(med => {
+                        const li = document.createElement('li');
+                        li.textContent = med;
+                        nightList.appendChild(li);
+                    });
+                }
+                
+                // Sync with backend database results
+                loadDashboardData();
 
                 generatedSchedule.classList.remove('hidden');
                 generateBtn.innerHTML = btnOriginalText;
@@ -637,7 +833,9 @@ document.addEventListener('DOMContentLoaded', () => {
             colDate: "Date Added",
             colStatus: "Status",
             statusActive: "Active",
-            statusPast: "Past"
+            statusPast: "Past",
+            btnCancel: "Cancel",
+            saveBtn: "Save Settings"
         },
         hi: {
             settingsTitle: "स्थानीयकरण और भाषा सेटिंग्स",
@@ -704,7 +902,9 @@ document.addEventListener('DOMContentLoaded', () => {
             colDate: "जोड़ने की तारीख",
             colStatus: "स्थिति",
             statusActive: "सक्रिय",
-            statusPast: "पुराना"
+            statusPast: "पुराना",
+            btnCancel: "रद्द करें",
+            saveBtn: "सेटिंग्स सहेजें"
         },
         kn: {
             settingsTitle: "ಸ್ಥಳೀಕರಣ ಮತ್ತು ಭಾಷಾ ಸೆಟ್ಟಿಂಗ್‌ಗಳು",

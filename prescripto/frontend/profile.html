@@ -132,29 +132,29 @@
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem;">
                                 <div>
                                     <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.2rem;" data-i18n="labelAge">Age</p>
-                                    <p><strong>45 Years</strong></p>
+                                    <p><strong id="display-age">45 Years</strong></p>
                                 </div>
                                 <div>
                                     <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.2rem;" data-i18n="labelGender">Gender
                                     </p>
-                                    <p><strong>Male</strong></p>
+                                    <p><strong id="display-gender">Male</strong></p>
                                 </div>
                                 <div>
-                                    <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.2rem;">Blood
+                                    <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.2rem;" data-i18n="labelBloodGroup">Blood
                                         Group</p>
-                                    <p><strong>O Positive (O+)</strong></p>
+                                    <p><strong id="display-blood">O Positive (O+)</strong></p>
                                 </div>
                                 <div>
-                                    <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.2rem;">Height
+                                    <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.2rem;" data-i18n="labelHeightWeight">Height
                                         / Weight</p>
-                                    <p><strong>178 cm / 82 kg</strong></p>
+                                    <p><strong id="display-height-weight">178 cm / 82 kg</strong></p>
                                 </div>
                             </div>
 
                             <div style="margin-top: 2rem;">
-                                <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.5rem;">Known
+                                <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.5rem;" data-i18n="labelConditions">Known
                                     Conditions</p>
-                                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                <div id="display-conditions" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                                     <span
                                         style="background: var(--clr-light-blue); color: var(--clr-blue); padding: 0.5rem 1rem; border-radius: 20px; font-weight: 600;">Hypertension</span>
                                     <span
@@ -164,13 +164,46 @@
                             </div>
 
                             <div style="margin-top: 2rem;">
-                                <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.5rem;">Emergency
+                                <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.5rem;" data-i18n="labelEmergency">Emergency
                                     Contact</p>
-                                <p><strong>Jane Doe (Wife) - +1 (555) 123-4567</strong></p>
+                                <p><strong id="display-emergency">Jane Doe (Wife) - +1 (555) 123-4567</strong></p>
                             </div>
 
-                            <button class="btn-primary"
-                                    class="fa-solid fa-pen-to-square"></i> <span data-i18n="btnEditProfile">Edit Profile Information</span></button>
+                            <div id="profile-action-buttons" style="margin-top: 2rem; display: flex; gap: 1rem;">
+                                <button class="btn-primary" id="btn-edit-profile">
+                                    <i class="fa-solid fa-pen-to-square"></i> <span data-i18n="btnEditProfile">Edit Profile Information</span>
+                                </button>
+                            </div>
+
+                            <!-- Edit Form (Hidden by default) -->
+                            <div id="edit-profile-form" style="display: none; margin-top: 2rem; background: #f8fafc; padding: 2rem; border-radius: 12px; border: 1px solid var(--clr-light-blue);">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                    <div>
+                                        <label style="display: block; font-size: 0.9rem; margin-bottom: 0.4rem;" data-i18n="labelName">Full Name</label>
+                                        <input type="text" id="edit-name" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ddd;">
+                                    </div>
+                                    <div>
+                                        <label style="display: block; font-size: 0.9rem; margin-bottom: 0.4rem;" data-i18n="labelAge">Age</label>
+                                        <input type="number" id="edit-age" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ddd;">
+                                    </div>
+                                    <div>
+                                        <label style="display: block; font-size: 0.9rem; margin-bottom: 0.4rem;" data-i18n="labelGender">Gender</label>
+                                        <input type="text" id="edit-gender" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ddd;">
+                                    </div>
+                                    <div>
+                                        <label style="display: block; font-size: 0.9rem; margin-bottom: 0.4rem;" data-i18n="labelEmergency">Emergency Contact</label>
+                                        <input type="text" id="edit-emergency" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ddd;">
+                                    </div>
+                                    <div style="grid-column: span 2;">
+                                        <label style="display: block; font-size: 0.9rem; margin-bottom: 0.4rem;" data-i18n="labelConditions">Known Conditions (comma separated)</label>
+                                        <input type="text" id="edit-conditions" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ddd;">
+                                    </div>
+                                </div>
+                                <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+                                    <button class="btn-primary" id="btn-save-profile" data-i18n="saveBtn">Save Settings</button>
+                                    <button class="btn-primary" id="btn-cancel-edit" style="background: #e2e8f0; color: #475569;" data-i18n="btnCancel">Cancel</button>
+                                </div>
+                            </div>
                                     
                             <div id="link-account-section" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--clr-light-blue);">
                                 <h3 style="margin-bottom: 1rem; color: var(--clr-dark-blue);">Link Account</h3>

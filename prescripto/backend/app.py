@@ -45,12 +45,14 @@ class ScheduleItem(db.Model):
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    google_id = db.Column(db.String(100), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
+    google_id = db.Column(db.String(100), unique=True, nullable=True)
     name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
     age = db.Column(db.Integer, nullable=True)
     gender = db.Column(db.String(20), nullable=True)
     blood_group = db.Column(db.String(10), nullable=True)
+    known_conditions = db.Column(db.Text, nullable=True)
+    emergency_contact = db.Column(db.String(200), nullable=True)
 
     def to_dict(self):
         return {
@@ -60,12 +62,23 @@ class User(db.Model):
             "name": self.name,
             "age": self.age,
             "gender": self.gender,
-            "blood_group": self.blood_group
+            "blood_group": self.blood_group,
+            "known_conditions": self.known_conditions,
+            "emergency_contact": self.emergency_contact
         }
 
-# Create the database tables if they don't exist
+# Create the database tables and handle schema updates
 with app.app_context():
     db.create_all()
+    import sqlite3
+    conn = sqlite3.connect(os.path.join(basedir, 'app.db'))
+    cursor = conn.cursor()
+    cursor.execute("PRAGMA table_info(user)")
+    columns = [column[1] for column in cursor.fetchall()]
+    if 'known_conditions' not in columns:
+        cursor.execute("ALTER TABLE user ADD COLUMN known_conditions TEXT")
+    conn.commit()
+    conn.close()
 
 @app.route('/')
 def home():
@@ -210,16 +223,16 @@ def generate_schedule():
             
         lower_line = line.lower()
         
-        # Determine the medicine name
-        # We find all matching keywords and remove them to isolate the medicine name
+        # Define keywords to remove
         keywords = ["after breakfast", "after lunch", "after dinner", "after food", "before sleep", "twice daily"]
-        
-        matched_keywords = [kw for kw in keywords if kw in lower_line]
         
         # Extract medicine name by removing all keywords from the line
         medicine = line
-        for kw in matched_keywords:
+        for kw in keywords:
             medicine = re.sub(rf'(?i){re.escape(kw)}', '', medicine)
+            
+        # Remove "take" if it's there
+        medicine = re.sub(rf'(?i)\btake\b', '', medicine)
             
         # Extract time if present
         time_match = re.search(r'\b(1[0-2]|0?[1-9])(?::([0-5][0-9]))?\s*(am|pm)\b', lower_line)
@@ -262,16 +275,18 @@ def generate_schedule():
         # Append medicine to the correct lists
         if is_morning:
             schedule["morning"].append(medicine)
+            db.session.add(ScheduleItem(medicine_name=medicine, time_of_day="morning", instructions=instructions))
         if is_afternoon:
             schedule["afternoon"].append(medicine)
+            db.session.add(ScheduleItem(medicine_name=medicine, time_of_day="afternoon", instructions=instructions))
         if is_evening:
             schedule["evening"].append(medicine)
+            db.session.add(ScheduleItem(medicine_name=medicine, time_of_day="evening", instructions=instructions))
         if is_night:
             schedule["night"].append(medicine)
+            db.session.add(ScheduleItem(medicine_name=medicine, time_of_day="night", instructions=instructions))
             
-        # If no explicit timing was found, we add it to a generic slot or just ignore. 
-        # For this application, we only schedule it if it matches the text.
-        
+    db.session.commit()
     return jsonify(schedule)
 
 @app.route('/get_medicines', methods=['GET'])
@@ -301,6 +316,51 @@ def save_medicine():
     db.session.commit()
 
     return jsonify({"message": "Medicine saved successfully!", "item": new_item.to_dict()}), 201
+
+@app.route('/api/get-profile', methods=['GET'])
+def get_profile():
+    """Fetch user profile by email (or just the first user for this demo)"""
+    email = request.args.get('email')
+    if email:
+        user = User.query.filter_by(email=email).first()
+    else:
+        user = User.query.first()
+        
+    if user:
+        return jsonify({"success": True, "user": user.to_dict()})
+    return jsonify({"success": False, "message": "User not found"}), 404
+
+@app.route('/api/update-profile', methods=['POST'])
+def update_profile():
+    """Update user profile data"""
+    data = request.json
+    email = data.get('email')
+    
+    if not email:
+        return jsonify({"success": False, "message": "Email is required"}), 400
+        
+    user = User.query.filter_by(email=email).first()
+    if user:
+        user.name = data.get('name', user.name)
+        user.age = data.get('age', user.age) # Use user.age as default if not provided
+        user.gender = data.get('gender', user.gender) # Use user.gender as default if not provided
+        user.blood_group = data.get('blood_group', user.blood_group) # Use user.blood_group as default if not provided
+        user.known_conditions = data.get('known_conditions', user.known_conditions) # Use user.known_conditions as default if not provided
+        user.emergency_contact = data.get('emergency_contact', user.emergency_contact) # Use user.emergency_contact as default if not provided
+    else:
+        user = User(
+            email=email,
+            name=data.get('name', 'Anonymous'),
+            age=data.get('age'),
+            gender=data.get('gender'),
+            blood_group=data.get('blood_group'), # Added blood_group for new user creation
+            known_conditions=data.get('known_conditions'),
+            emergency_contact=data.get('emergency_contact')
+        )
+        db.session.add(user)
+    
+    db.session.commit()
+    return jsonify({"success": True, "message": "Profile updated successfully", "user": user.to_dict()})
 
 @app.route('/api/google-login', methods=['POST'])
 def google_login():
