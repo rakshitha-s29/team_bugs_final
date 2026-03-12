@@ -173,32 +173,28 @@ document.addEventListener('DOMContentLoaded', () => {
         uploadArea.classList.remove('dragover');
     });
 
-    uploadArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        uploadArea.classList.remove('dragover');
-        if (e.dataTransfer.files.length > 0) {
-            simulateUpload();
-        }
-    });
-
-    fileInput.addEventListener('change', () => {
-        if (fileInput.files.length > 0) {
-            simulateUpload();
-        }
-    });
-
-    function simulateUpload() {
+    function handleUpload(file) {
         uploadArea.innerHTML = '<i class="fa-solid fa-spinner fa-spin upload-icon"></i><p>Extracting medicines...</p>';
 
-        setTimeout(() => {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        fetch('/upload_prescription', {
+            method: 'POST',
+            body: formData
+        })
+        .then(async response => {
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to process image');
+            }
+            return data;
+        })
+        .then(data => {
             uploadArea.classList.add('hidden');
             uploadResult.classList.remove('hidden');
 
-            const results = [
-                { name: 'Paracetamol', purpose: 'Fever relief', time: 'Morning' },
-                { name: 'Amoxicillin', purpose: 'Antibiotic', time: 'Afternoon' },
-                { name: 'Vitamin D', purpose: 'Bone health', time: 'Night' }
-            ];
+            const results = data.medicines;
 
             extractedList.innerHTML = results.map(item =>
                 `<li>
@@ -219,8 +215,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 fileInput.value = '';
             };
             uploadResult.appendChild(resetBtn);
-        }, 1500);
+            
+            // Auto populate the prompt with the extracted medicines to make generating the schedule easier
+            const names = results.map(r => r.name).join(', ');
+            instructionInput.value = `Please create a schedule for: ${names}`;
+        })
+        .catch(err => {
+            console.error("Upload error: ", err);
+            // Revert the upload area and show an error alert
+            uploadArea.innerHTML = '<i class="fa-solid fa-cloud-arrow-up upload-icon"></i><p>Click or drag image to upload and extract medicines</p>';
+            fileInput.value = '';
+            alert(err.message || 'An error occurred while reading the document.');
+        });
     }
+
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        if (e.dataTransfer.files.length > 0) {
+            handleUpload(e.dataTransfer.files[0]);
+        }
+    });
+
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files.length > 0) {
+            handleUpload(fileInput.files[0]);
+        }
+    });
 
     // Voice Input Simulation
     const voiceBtn = document.getElementById('voice-btn');
@@ -295,6 +316,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 generatedSchedule.classList.remove('hidden');
                 generateBtn.innerHTML = btnOriginalText;
+
+                // Save all generated medicines to the database
+                Object.keys(data).forEach(timeOfDay => {
+                    if (data[timeOfDay]) {
+                        data[timeOfDay].forEach(med => {
+                            fetch('/save_medicine', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    medicine_name: med,
+                                    time_of_day: timeOfDay,
+                                    instructions: instructionInput.value
+                                })
+                            }).catch(console.error);
+                        });
+                    }
+                });
             })
             .catch(err => {
                 console.error(err);
@@ -309,6 +347,62 @@ document.addEventListener('DOMContentLoaded', () => {
                 generatedSchedule.classList.remove('hidden');
             });
     });
+
+    // Fetch and display saved medicines on load if we are on the dashboard
+    if (currentPath === '/' || currentPath === '/dashboard' || currentPath === '/index.html') {
+        const trackerList = document.querySelector('.tracker-list');
+        if (trackerList) {
+            fetch('/get_medicines')
+                .then(res => res.json())
+                .then(medicines => {
+                    if (medicines.length > 0) {
+                        // Clear mock data and populate with DB items
+                        trackerList.innerHTML = '';
+                        medicines.forEach(item => {
+                            const timeColors = {
+                                'morning': 'bg-primary-soft text-primary',
+                                'afternoon': 'bg-amber-100 text-amber-700',
+                                'evening': 'bg-orange-100 text-orange-700',
+                                'night': 'bg-emerald-100 text-emerald-700'
+                            };
+                            const colorClass = timeColors[item.time_of_day] || 'bg-gray-100 text-gray-700';
+                            
+                            trackerList.innerHTML += `
+                                <div class="tracker-item slide-up">
+                                    <div class="tracker-info">
+                                        <h4>${item.medicine_name}</h4>
+                                        <p>Scheduled for ${item.time_of_day}</p>
+                                    </div>
+                                    <div class="tracker-status">
+                                        <span class="badge ${colorClass}">${item.time_of_day}</span>
+                                        <label class="custom-checkbox">
+                                            <input type="checkbox" class="intake-checkbox">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            `;
+                        });
+
+                        // Reattach checkbox logic for newly rendered items
+                        const newCheckboxes = document.querySelectorAll('.intake-checkbox');
+                        newCheckboxes.forEach(cb => {
+                            cb.addEventListener('change', (e) => {
+                                const trackerItem = e.target.closest('.tracker-item');
+                                if (e.target.checked) {
+                                    trackerItem.style.opacity = '0.6';
+                                    trackerItem.querySelector('h4').style.textDecoration = 'line-through';
+                                } else {
+                                    trackerItem.style.opacity = '1';
+                                    trackerItem.querySelector('h4').style.textDecoration = 'none';
+                                }
+                            });
+                        });
+                    }
+                })
+                .catch(console.error);
+        }
+    }
 
     // Intake Tracker Strike-through
     const checkboxes = document.querySelectorAll('.intake-checkbox');
@@ -339,8 +433,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // Filter History Table
             const rows = document.querySelectorAll('.medicine-table tbody tr');
             rows.forEach(row => {
-                const medName = row.querySelector('td:first-child').textContent.toLowerCase();
-                const desc = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                const medNameTd = row.querySelector('td:first-child');
+                const descTd = row.querySelector('td:nth-child(2)');
+                if (!medNameTd || !descTd) return;
+                
+                const medName = medNameTd.textContent.toLowerCase();
+                const desc = descTd.textContent.toLowerCase();
                 if (medName.includes(query) || desc.includes(query)) {
                     row.style.display = '';
                 } else {
@@ -351,10 +449,42 @@ document.addEventListener('DOMContentLoaded', () => {
             // Filter Intake Tracker
             const trackerItems = document.querySelectorAll('.tracker-item');
             trackerItems.forEach(item => {
-                const itemName = item.querySelector('h4').textContent.toLowerCase();
-                const itemDesc = item.querySelector('p').textContent.toLowerCase();
+                const header = item.querySelector('h4');
+                const p = item.querySelector('p');
+                if (!header || !p) return;
+                
+                const itemName = header.textContent.toLowerCase();
+                const itemDesc = p.textContent.toLowerCase();
                 if (itemName.includes(query) || itemDesc.includes(query)) {
                     item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Filter Upload Extracted Medicines
+            const extractedItems = document.querySelectorAll('#extracted-medicines li');
+            extractedItems.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(query)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Filter Schedule Generator Lists
+            const scheduleItems = document.querySelectorAll('.time-block ul li');
+            scheduleItems.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                // Avoid hiding the "None" placeholder
+                if (text.trim() === 'none') {
+                    item.style.display = '';
+                    return;
+                }
+                
+                if (text.includes(query)) {
+                    item.style.display = '';
                 } else {
                     item.style.display = 'none';
                 }
@@ -373,12 +503,74 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // BMI Calculator Logic
+    const calculateBmiBtn = document.getElementById('calculate-bmi-btn');
+    if (calculateBmiBtn) {
+        calculateBmiBtn.addEventListener('click', () => {
+            const heightInput = document.getElementById('bmi-height').value;
+            const weightInput = document.getElementById('bmi-weight').value;
+            
+            if (!heightInput || !weightInput) {
+                alert("Please enter both height and weight to calculate BMI.");
+                return;
+            }
+            
+            // Height is expected in cm, convert to meters for formula
+            const heightInMeters = parseFloat(heightInput) / 100;
+            const weightInKg = parseFloat(weightInput);
+            
+            if (heightInMeters <= 0 || weightInKg <= 0) {
+                alert("Please enter valid positive numbers.");
+                return;
+            }
+            
+            const bmi = weightInKg / (heightInMeters * heightInMeters);
+            const roundedBmi = bmi.toFixed(1);
+            
+            let status = "";
+            let color = "";
+            let bgColor = "";
+            
+            if (bmi < 18.5) {
+                status = "Underweight";
+                color = "#0284c7"; // Blue
+                bgColor = "#e0f2fe";
+            } else if (bmi >= 18.5 && bmi < 24.9) {
+                status = "Normal Weight";
+                color = "#16a34a"; // Green
+                bgColor = "#dcfce7";
+            } else if (bmi >= 25 && bmi < 29.9) {
+                status = "Overweight";
+                color = "#ea580c"; // Orange
+                bgColor = "#ffedd5";
+            } else {
+                status = "Obese";
+                color = "#dc2626"; // Red
+                bgColor = "#fee2e2";
+            }
+            
+            // Update UI
+            document.getElementById('bmi-placeholder').classList.add('hidden');
+            const resultArea = document.getElementById('bmi-result');
+            resultArea.classList.remove('hidden');
+            
+            document.getElementById('bmi-score').textContent = roundedBmi;
+            document.getElementById('bmi-score').style.color = color;
+            
+            const statusBadge = document.getElementById('bmi-status');
+            statusBadge.textContent = status;
+            statusBadge.style.color = color;
+            statusBadge.style.backgroundColor = bgColor;
+        });
+    }
+
     // Global Language syncing
     const globalLang = document.getElementById('global-lang');
     if (globalLang) {
         globalLang.addEventListener('change', (e) => {
-            if (scheduleLang) {
-                scheduleLang.value = e.target.value;
+            const schedLangEl = document.getElementById('schedule-lang');
+            if (schedLangEl) {
+                schedLangEl.value = e.target.value;
             }
         });
     }
