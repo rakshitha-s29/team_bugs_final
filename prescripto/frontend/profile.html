@@ -123,60 +123,55 @@
                     <div class="profile-details"
                         style="display: flex; flex-direction: row; gap: 3rem; align-items: flex-start;">
                         <img src="https://ui-avatars.com/api/?name=John+Doe&background=e0f2fe&color=0284c7&size=200"
-                            alt="John Doe" class="profile-img-large"
+                            alt="John Doe" class="profile-img-large avatar"
                             style="width: 200px; height: 200px; border-radius: 50%; border: 4px solid var(--clr-light-blue);">
-                        <div class="info" style="flex: 1; font-size: 1.2rem;">
-                            <h2 style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--clr-dark-blue);">John Doe
-                            </h2>
+                        
+                        <div class="info" style="flex: 1; font-size: 1.2rem; width: 100%;">
+                            <div id="profile-display">
+                                <h2 id="display-name" style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--clr-dark-blue);">John Doe</h2>
 
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem;">
-                                <div>
-                                    <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.2rem;" data-i18n="labelAge">Age</p>
-                                    <p><strong id="display-age">45 Years</strong></p>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem;">
+                                    <div>
+                                        <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.2rem;" data-i18n="labelAge">Age</p>
+                                        <p><strong id="display-age">45 Years</strong></p>
+                                    </div>
+                                    <div>
+                                        <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.2rem;" data-i18n="labelGender">Gender</p>
+                                        <p><strong id="display-gender">Male</strong></p>
+                                    </div>
+                                    <div>
+                                        <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.2rem;" data-i18n="labelBloodGroup">Blood Group</p>
+                                        <p><strong id="display-blood">O Positive (O+)</strong></p>
+                                    </div>
+                                    <div>
+                                        <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.2rem;" data-i18n="labelHeightWeight">Height / Weight</p>
+                                        <p><strong id="display-height-weight">178 cm / 82 kg</strong></p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.2rem;" data-i18n="labelGender">Gender
-                                    </p>
-                                    <p><strong id="display-gender">Male</strong></p>
-                                </div>
-                                <div>
-                                    <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.2rem;" data-i18n="labelBloodGroup">Blood
-                                        Group</p>
-                                    <p><strong id="display-blood">O Positive (O+)</strong></p>
-                                </div>
-                                <div>
-                                    <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.2rem;" data-i18n="labelHeightWeight">Height
-                                        / Weight</p>
-                                    <p><strong id="display-height-weight">178 cm / 82 kg</strong></p>
-                                </div>
-                            </div>
 
-                            <div style="margin-top: 2rem;">
-                                <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.5rem;" data-i18n="labelConditions">Known
-                                    Conditions</p>
-                                <div id="display-conditions" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                                    <span
-                                        style="background: var(--clr-light-blue); color: var(--clr-blue); padding: 0.5rem 1rem; border-radius: 20px; font-weight: 600;">Hypertension</span>
-                                    <span
-                                        style="background: var(--clr-light-blue); color: var(--clr-blue); padding: 0.5rem 1rem; border-radius: 20px; font-weight: 600;">Mild
-                                        Asthma</span>
+                                <div style="margin-top: 2rem;">
+                                    <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.5rem;" data-i18n="labelConditions">Known Conditions</p>
+                                    <div id="display-conditions" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                        <span style="background: var(--clr-light-blue); color: var(--clr-blue); padding: 0.5rem 1rem; border-radius: 20px; font-weight: 600;">Hypertension</span>
+                                        <span style="background: var(--clr-light-blue); color: var(--clr-blue); padding: 0.5rem 1rem; border-radius: 20px; font-weight: 600;">Mild Asthma</span>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div style="margin-top: 2rem;">
-                                <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.5rem;" data-i18n="labelEmergency">Emergency
-                                    Contact</p>
-                                <p><strong id="display-emergency">Jane Doe (Wife) - +1 (555) 123-4567</strong></p>
-                            </div>
+                                <div style="margin-top: 2rem;">
+                                    <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.5rem;" data-i18n="labelEmergency">Emergency Contact</p>
+                                    <p><strong id="display-emergency">Jane Doe (Wife) - +1 (555) 123-4567</strong></p>
+                                </div>
 
-                            <div id="profile-action-buttons" style="margin-top: 2rem; display: flex; gap: 1rem;">
-                                <button class="btn-primary" id="btn-edit-profile">
-                                    <i class="fa-solid fa-pen-to-square"></i> <span data-i18n="btnEditProfile">Edit Profile Information</span>
-                                </button>
+                                <div id="profile-action-buttons" style="margin-top: 2rem; display: flex; gap: 1rem;">
+                                    <button class="btn-primary" id="btn-edit-profile">
+                                        <i class="fa-solid fa-pen-to-square"></i> <span data-i18n="btnEditProfile">Edit Profile Information</span>
+                                    </button>
+                                </div>
                             </div>
 
                             <!-- Edit Form (Hidden by default) -->
                             <div id="edit-profile-form" style="display: none; margin-top: 2rem; background: #f8fafc; padding: 2rem; border-radius: 12px; border: 1px solid var(--clr-light-blue);">
+                                <h3 style="margin-bottom: 1.5rem; color: var(--clr-dark-blue);">Edit Profile</h3>
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                                     <div>
                                         <label style="display: block; font-size: 0.9rem; margin-bottom: 0.4rem;" data-i18n="labelName">Full Name</label>
@@ -194,6 +189,14 @@
                                         <label style="display: block; font-size: 0.9rem; margin-bottom: 0.4rem;" data-i18n="labelEmergency">Emergency Contact</label>
                                         <input type="text" id="edit-emergency" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ddd;">
                                     </div>
+                                    <div>
+                                        <label style="display: block; font-size: 0.9rem; margin-bottom: 0.4rem;">Blood Group</label>
+                                        <input type="text" id="edit-blood" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ddd;">
+                                    </div>
+                                    <div>
+                                        <label style="display: block; font-size: 0.9rem; margin-bottom: 0.4rem;">Height / Weight</label>
+                                        <input type="text" id="edit-height-weight" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ddd;">
+                                    </div>
                                     <div style="grid-column: span 2;">
                                         <label style="display: block; font-size: 0.9rem; margin-bottom: 0.4rem;" data-i18n="labelConditions">Known Conditions (comma separated)</label>
                                         <input type="text" id="edit-conditions" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ddd;">
@@ -206,7 +209,7 @@
                             </div>
                                     
                             <div id="link-account-section" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--clr-light-blue);">
-                                <h3 style="margin-bottom: 1rem; color: var(--clr-dark-blue);">Link Account</h3>
+                                <h3 style="margin-bottom: 1rem; color: var(--clr-dark-blue);" data-i18n="linkAccount">Link Account</h3>
                                 <button class="btn-primary" id="google-auth-btn" style="background: white; color: #333; border: 1px solid #ccc; padding: 0.5rem 1rem; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem; border-radius: 4px; cursor: pointer; font-weight: 500;">
                                     <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" style="width: 20px; height: 20px;">
                                         <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
@@ -220,16 +223,29 @@
                             </div>
                             
                             <div id="linked-account-info" style="display: none; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--clr-light-blue);">
-                                <h3 style="margin-bottom: 1rem; color: var(--clr-dark-blue);">Linked Account</h3>
+                                <h3 style="margin-bottom: 1rem; color: var(--clr-dark-blue);" data-i18n="linkedAccount">Linked Account</h3>
                                 <div style="display: flex; align-items: center; gap: 1rem; background: #f8fafc; padding: 1rem; border-radius: 12px; border: 1px solid #e2e8f0;">
                                     <i class="fa-brands fa-google" style="color: #ea4335; font-size: 1.5rem;"></i>
                                     <div>
                                         <p style="font-weight: 600; color: var(--clr-dark-blue);" id="google-linked-name">Google Account</p>
                                         <p style="color: var(--clr-gray); font-size: 0.9rem;" id="google-linked-email">Connected</p>
                                     </div>
-                                    <button class="btn-primary" id="btn-logout" style="margin-left: auto; background: #ef4444; padding: 0.5rem 1rem; font-size: 0.9rem;">
-                                        <i class="fa-solid fa-arrow-right-from-bracket"></i> Unlink Log Out
+                                    <button class="btn-primary" id="btn-logout-google" style="margin-left: auto; background: #ef4444; padding: 0.5rem 1rem; font-size: 0.9rem;">
+                                        <i class="fa-solid fa-arrow-right-from-bracket"></i> Unlink
                                     </button>
+                                </div>
+                            </div>
+                            <div id="customer-support-section" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--clr-light-blue);">
+                                <h3 style="margin-bottom: 1rem; color: var(--clr-dark-blue);">Customer Support</h3>
+                                <div style="display: flex; align-items: center; gap: 1rem; background: #eff6ff; padding: 1.5rem; border-radius: 12px; border: 1px solid #bfdbfe;">
+                                    <i class="fa-solid fa-headset" style="color: var(--clr-blue); font-size: 2rem;"></i>
+                                    <div>
+                                        <p style="font-weight: 600; color: var(--clr-dark-blue);">Need help with your account? We're here 24/7.</p>
+                                        <p style="color: var(--clr-gray); font-size: 0.95rem; margin-top: 0.25rem;">Email us at: <a href="mailto:support@prescripto.com" style="color: var(--clr-blue); text-decoration: none; font-weight: 500;">support@prescripto.com</a></p>
+                                    </div>
+                                    <a href="mailto:support@prescripto.com" class="btn-primary" style="margin-left: auto; text-decoration: none; background: white; color: var(--clr-blue); border: 1px solid var(--clr-blue);">
+                                        Contact Support
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -265,173 +281,6 @@
                                 <h3 style="font-size: 1.5rem; color: var(--clr-gray); margin-bottom: 0.5rem;">Your BMI Is</h3>
                                 <div id="bmi-score" style="font-size: 4.5rem; font-weight: 700; color: var(--clr-dark-blue); margin: 1rem 0; line-height: 1;">24.5</div>
                                 <div id="bmi-status" style="display: inline-block; padding: 0.5rem 1.5rem; border-radius: 30px; font-weight: 600; font-size: 1.1rem; background: #dcfce7; color: #166534;">Normal Weight</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Main Panels Grid (Hidden for this page) -->
-                <div class="panels-grid" style="display: none;">
-                    <!-- Left Column -->
-                    <div class="column-left">
-                        <!-- Profile Panel -->
-                        <div class="panel profile-panel">
-                            <div class="panel-header">
-                                <h3>Patient Profile</h3>
-                            </div>
-                            <div class="profile-details">
-                                <img src="https://ui-avatars.com/api/?name=John+Doe&background=e0f2fe&color=0284c7&size=100"
-                                    alt="John Doe" class="profile-img-large">
-                                <div class="info">
-                                    <h2>John Doe</h2>
-                                    <p><strong>Age:</strong> 45</p>
-                                    <p><strong>Gender:</strong> Male</p>
-                                    <p><strong>Conditions:</strong> Hypertension, Mild Asthma</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Schedule Generator -->
-                        <div class="panel schedule-panel">
-                            <div class="panel-header">
-                                <h3>Schedule Generator</h3>
-                            </div>
-                            <div class="generator-body">
-                                <p class="text-sm">Type or speak your doctor's instructions to generate a schedule.</p>
-                                <div class="input-group">
-                                    <textarea id="instruction-input"
-                                        placeholder="E.g., Take Paracetamol after breakfast and Vitamin D before bed..."></textarea>
-                                    <button class="voice-btn" id="voice-btn" title="Click to speak">
-                                        <i class="fa-solid fa-microphone"></i>
-                                    </button>
-                                </div>
-                                <div class="action-row">
-                                    <select id="schedule-lang">
-                                        <option value="en">English</option>
-                                        <option value="hi">Hindi</option>
-                                        <option value="kn">Kannada</option>
-                                    </select>
-                                    <button class="btn-primary" id="generate-btn">Generate Medicine Schedule</button>
-                                </div>
-                                <div id="generated-schedule" class="hidden">
-                                    <h4>Your Schedule</h4>
-                                    <div class="schedule-times">
-                                        <div class="time-block">
-                                            <h5><i class="fa-regular fa-sun"></i> Morning</h5>
-                                            <ul id="morning-list"></ul>
-                                        </div>
-                                        <div class="time-block">
-                                            <h5><i class="fa-solid fa-sun-bright"
-                                                    style="color:var(--clr-dark-blue)"></i> Afternoon</h5>
-                                            <ul id="afternoon-list"></ul>
-                                        </div>
-                                        <div class="time-block">
-                                            <h5><i class="fa-solid fa-moon"></i> Night</h5>
-                                            <ul id="night-list"></ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Upload Simulation -->
-                        <div class="panel upload-panel">
-                            <div class="panel-header">
-                                <h3>Upload Prescription</h3>
-                            </div>
-                            <div class="upload-area" id="upload-area">
-                                <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
-                                <p>Click or drag image to upload and extract medicines</p>
-                                <input type="file" id="file-input" hidden accept="image/*">
-                            </div>
-                            <div id="upload-result" class="hidden">
-                                <h4>Extraction Result</h4>
-                                <ul class="extracted-list" id="extracted-medicines">
-                                    <!-- Populated by JS -->
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Right Column -->
-                    <div class="column-right">
-                        <!-- Medicine Intake Tracker -->
-                        <div class="panel tracker-panel">
-                            <div class="panel-header">
-                                <h3>Today's Intake Tracker</h3>
-                                <span class="date-badge" id="current-date">Today</span>
-                            </div>
-                            <div class="tracker-list">
-                                <div class="tracker-item">
-                                    <div class="tracker-info">
-                                        <h4>Paracetamol <span class="badge-time">Morning</span></h4>
-                                        <p>Fever relief</p>
-                                    </div>
-                                    <label class="custom-checkbox">
-                                        <input type="checkbox" class="intake-checkbox">
-                                        <span class="checkmark"></span>
-                                    </label>
-                                </div>
-                                <div class="tracker-item">
-                                    <div class="tracker-info">
-                                        <h4>Amoxicillin <span class="badge-time">Afternoon</span></h4>
-                                        <p>Antibiotic</p>
-                                    </div>
-                                    <label class="custom-checkbox">
-                                        <input type="checkbox" class="intake-checkbox">
-                                        <span class="checkmark"></span>
-                                    </label>
-                                </div>
-                                <div class="tracker-item">
-                                    <div class="tracker-info">
-                                        <h4>Vitamin D <span class="badge-time">Night</span></h4>
-                                        <p>Bone health</p>
-                                    </div>
-                                    <label class="custom-checkbox">
-                                        <input type="checkbox" class="intake-checkbox">
-                                        <span class="checkmark"></span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Medicine History & Description -->
-                        <div class="panel history-panel">
-                            <div class="panel-header">
-                                <h3>Medicine History & Details</h3>
-                            </div>
-                            <div class="table-responsive">
-                                <table class="medicine-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Medicine</th>
-                                            <th>Description</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><strong>Paracetamol</strong></td>
-                                            <td>Fever and pain relief</td>
-                                            <td><span class="status-badge active">Active</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Amoxicillin</strong></td>
-                                            <td>Treats bacterial infections</td>
-                                            <td><span class="status-badge active">Active</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Vitamin D</strong></td>
-                                            <td>Supports bone health</td>
-                                            <td><span class="status-badge active">Active</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Ibuprofen</strong></td>
-                                            <td>Anti-inflammatory</td>
-                                            <td><span class="status-badge inactive">Past</span></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
                             </div>
                         </div>
                     </div>
@@ -484,22 +333,7 @@
             if (user) {
                 const userData = JSON.parse(user);
                 
-                // Update names and avatars
-                const nameElements = document.querySelectorAll('.info h2');
-                if (nameElements.length) nameElements[0].textContent = userData.name;
-                
-                // Set the specific new profile fields if they exist
-                const profileDetailValues = document.querySelectorAll('.info .grid > div > p:nth-child(2) strong');
-                // The order in the HTML is: Age, Gender, Blood Group, Height/Weight. We only update Age/Gender if available
-                const infoGrid = document.querySelector('.info > div[style*="grid"]');
-                if (infoGrid) {
-                    const infoBlocks = infoGrid.querySelectorAll('div');
-                    if (infoBlocks.length >= 2) {
-                        if (userData.age) infoBlocks[0].querySelector('strong').textContent = userData.age + ' Years';
-                        if (userData.gender) infoBlocks[1].querySelector('strong').textContent = userData.gender;
-                    }
-                }
-                
+                // Set avatars
                 const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=e0f2fe&color=0284c7`;
                 document.querySelectorAll('.avatar, .profile-img-large').forEach(img => img.src = avatarUrl);
                 
@@ -507,17 +341,23 @@
                 const linkSection = document.getElementById('link-account-section');
                 const linkedInfo = document.getElementById('linked-account-info');
                 
-                if (linkSection) linkSection.style.display = 'none';
-                if (linkedInfo) {
-                    linkedInfo.style.display = 'block';
-                    document.getElementById('google-linked-name').textContent = userData.name;
-                    document.getElementById('google-linked-email').textContent = userData.email;
-                    
-                    // Add logout functionality
-                    document.getElementById('btn-logout').addEventListener('click', () => {
-                        localStorage.removeItem('user');
-                        window.location.reload();
-                    });
+                if (userData.google_id) {
+                    if (linkSection) linkSection.style.display = 'none';
+                    if (linkedInfo) {
+                        linkedInfo.style.display = 'block';
+                        document.getElementById('google-linked-name').textContent = userData.name;
+                        document.getElementById('google-linked-email').textContent = userData.email;
+                        
+                        // Add logout functionality
+                        const logoutBtn = document.getElementById('btn-logout-google');
+                        if (logoutBtn) {
+                            logoutBtn.addEventListener('click', async () => {
+                                await fetch('/api/logout');
+                                localStorage.removeItem('user');
+                                window.location.href = '/login';
+                            });
+                        }
+                    }
                 }
             }
             

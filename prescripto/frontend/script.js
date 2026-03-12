@@ -1158,7 +1158,147 @@ document.addEventListener('DOMContentLoaded', () => {
     const globalLang = document.getElementById('global-lang');
     if (globalLang) {
         globalLang.addEventListener('change', (e) => {
-            applyTranslations(e.target.value);
+            const newLang = e.target.value;
+            applyTranslations(newLang);
+            // Sync with backend async
+            fetch('/api/profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ language_setting: newLang })
+            }).catch(console.error);
         });
+    }
+
+    // -- USER AUTHENTICATION & DATA FETCHING --
+    const isPublicPage = currentPath === '/' || currentPath === '/welcome.html' || currentPath === '/login' || currentPath === '/login.html';
+    
+    if (!isPublicPage) {
+        fetch('/api/me')
+            .then(res => {
+                if (res.status === 401 || res.status === 403) {
+                    window.location.href = '/login';
+                    throw new Error('Not logged in');
+                }
+                return res.json();
+            })
+            .then(data => {
+                if (data && data.user) {
+                    const user = data.user;
+                    
+                    // Update global avatar and name if they exist
+                    const avatar = document.querySelector('.user-profile img');
+                    if (avatar) {
+                        const nameForUrl = encodeURIComponent(user.name || user.username || 'User');
+                        avatar.src = `https://ui-avatars.com/api/?name=${nameForUrl}&background=e0f2fe&color=0284c7`;
+                    }
+                    
+                    // Populate Profile Page if we are on it
+                    if (currentPath === '/profile' || currentPath === '/profile.html') {
+                        document.getElementById('profile-display-name').textContent = user.name || user.username || 'N/A';
+                        document.getElementById('profile-display-age').textContent = user.age ? `${user.age} Years` : 'N/A';
+                        document.getElementById('profile-display-gender').textContent = user.gender || 'N/A';
+                        document.getElementById('profile-display-blood').textContent = user.blood_group || 'N/A';
+                        document.getElementById('profile-display-height-weight').textContent = user.height_weight || 'N/A';
+                        
+                        // Parse conditions
+                        const conditionsContainer = document.getElementById('profile-display-conditions');
+                        conditionsContainer.innerHTML = '';
+                        if (user.conditions) {
+                            user.conditions.split(',').forEach(cond => {
+                                if (cond.trim()) {
+                                    conditionsContainer.innerHTML += `<span style="background: var(--clr-light-blue); color: var(--clr-blue); padding: 0.5rem 1rem; border-radius: 20px; font-weight: 600;">${cond.trim()}</span>`;
+                                }
+                            });
+                        } else {
+                            conditionsContainer.innerHTML = '<span>None recorded</span>';
+                        }
+                        
+                        document.getElementById('profile-display-emergency').textContent = user.emergency_contact || 'N/A';
+                        
+                        // Setup the Edit Form values
+                        document.getElementById('edit-name').value = user.name || '';
+                        document.getElementById('edit-age').value = user.age || '';
+                        document.getElementById('edit-gender').value = user.gender || '';
+                        document.getElementById('edit-blood').value = user.blood_group || '';
+                        document.getElementById('edit-height-weight').value = user.height_weight || '';
+                        document.getElementById('edit-conditions').value = user.conditions || '';
+                        document.getElementById('edit-emergency').value = user.emergency_contact || '';
+                    }
+
+                    // Apply the language setting from the database, unless a local one was explicitly toggled
+                     if (user.language_setting && user.language_setting !== (localStorage.getItem('prescripto_lang') || 'en')) {
+                        applyTranslations(user.language_setting);
+                    }
+                }
+            })
+            .catch(console.error);
+    }
+
+    // Toggle logic for Edit Profile
+    const editProfileBtn = document.getElementById('edit-profile-btn');
+    const cancelEditBtn = document.getElementById('cancel-edit-btn');
+    const profileDisplay = document.getElementById('profile-display');
+    const profileEditForm = document.getElementById('profile-edit-form');
+
+    if (editProfileBtn && cancelEditBtn && profileDisplay && profileEditForm) {
+        editProfileBtn.addEventListener('click', () => {
+            profileDisplay.style.display = 'none';
+            profileEditForm.style.display = 'block';
+        });
+
+        cancelEditBtn.addEventListener('click', () => {
+            profileEditForm.style.display = 'none';
+            profileDisplay.style.display = 'flex';
+        });
+
+        profileEditForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const payload = {
+                name: document.getElementById('edit-name').value,
+                age: document.getElementById('edit-age').value,
+                gender: document.getElementById('edit-gender').value,
+                blood_group: document.getElementById('edit-blood').value,
+                height_weight: document.getElementById('edit-height-weight').value,
+                conditions: document.getElementById('edit-conditions').value,
+                emergency_contact: document.getElementById('edit-emergency').value,
+            };
+
+            const btn = document.getElementById('save-edit-btn');
+            const originalText = btn.textContent;
+            btn.textContent = 'Saving...';
+
+            fetch('/api/profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert('Error saving profile');
+                    btn.textContent = originalText;
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Connection error');
+                btn.textContent = originalText;
+            });
+        });
+    }
+
+    // Handle logout button natively rather than placeholder
+    const logoutBtn = document.getElementById('btn-logout');
+    if (logoutBtn) {
+        // Change onclick behavior to actual logout
+        const newLogout = logoutBtn.cloneNode(true);
+        logoutBtn.parentNode.replaceChild(newLogout, logoutBtn);
+        newLogout.addEventListener('click', () => {
+            window.location.href = '/api/logout';
+        });
+        newLogout.innerHTML = '<i class="fa-solid fa-arrow-right-from-bracket"></i> Log Out';
+        newLogout.id = 'btn-logout'; // preserve ID
     }
 });
