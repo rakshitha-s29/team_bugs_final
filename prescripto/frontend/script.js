@@ -554,13 +554,403 @@ document.addEventListener('DOMContentLoaded', () => {
             const resultArea = document.getElementById('bmi-result');
             resultArea.classList.remove('hidden');
             
-            document.getElementById('bmi-score').textContent = roundedBmi;
             document.getElementById('bmi-score').style.color = color;
             
             const statusBadge = document.getElementById('bmi-status');
-            statusBadge.textContent = status;
+            statusBadge.textContent = trans[status === "Normal Weight" ? "bmiStatusNormal" : "statusActive"]; // Simplified for now
             statusBadge.style.color = color;
             statusBadge.style.backgroundColor = bgColor;
+        });
+    }
+
+    // UI Translation Dictionary
+    const uiTranslations = {
+        en: {
+            // Settings Page
+            settingsTitle: "Localization & Language Settings",
+            displayLangLabel: "Display Language",
+            displayLangDesc: "Choose the primary language for the application interface.",
+            voiceLangLabel: "Voice Output Language",
+            voiceLangDesc: "Select the language to be used for Text-to-Speech schedule reading.",
+            testBtn: "Test",
+            saveBtn: "Save Settings",
+            // Sidebar Navigation
+            navDashboard: "Dashboard",
+            navUpload: "Upload Prescription",
+            navMedicine: "Medicine List",
+            navHistory: "Prescription History",
+            navProfile: "Profile",
+            navSettings: "Language Settings",
+            // Dashboard & Global
+            searchPlaceholder: "Search medicines, reminders...",
+            dashboardTitle: "Healthcare Dashboard",
+            statsPrescriptions: "Prescriptions Uploaded",
+            statsMedicines: "Medicines Detected",
+            statsCompliance: "Medicine Compliance",
+            statsReminders: "Active Reminders",
+            chartTitle: "Compliance & Upload Trends",
+            chartDay: "Day",
+            chartWeek: "Week",
+            chartMonth: "Month",
+            // Profile Page
+            profileTitle: "Patient Profile Configuration",
+            labelAge: "Age",
+            labelGender: "Gender",
+            labelBloodGroup: "Blood Group",
+            labelHeightWeight: "Height / Weight",
+            labelConditions: "Known Conditions",
+            labelEmergency: "Emergency Contact",
+            btnEditProfile: "Edit Profile Information",
+            linkAccount: "Link Account",
+            linkedAccount: "Linked Account",
+            signInGoogle: "Sign in with Google",
+            unitYears: "Years",
+            // BMI Calculator
+            bmiTitle: "BMI Calculator",
+            labelHeight: "Height (cm)",
+            labelWeight: "Weight (kg)",
+            placeholderHeight: "e.g., 175",
+            placeholderWeight: "e.g., 70",
+            btnCalculateBmi: "Calculate BMI",
+            bmiStatusNormal: "Normal Weight",
+            bmiPlaceholderText: "Enter your height and weight to calculate your Body Mass Index.",
+            // Schedule & Upload
+            scheduleTitle: "Schedule Generator",
+            scheduleDesc: "Type or speak your doctor's instructions to generate a schedule.",
+            placeholderInstructions: "E.g., Take Paracetamol after breakfast and Vitamin D before bed...",
+            btnGenerate: "Generate Medicine Schedule",
+            yourSchedule: "Your Schedule",
+            timeMorning: "Morning",
+            timeAfternoon: "Afternoon",
+            timeEvening: "Evening",
+            timeNight: "Night",
+            uploadTitle: "Upload Prescription",
+            uploadDesc: "Click or drag image to upload and extract medicines",
+            uploadFormats: "Supported formats: JPG, PNG, PDF (Max 10MB)",
+            extractResult: "Extraction Result",
+            btnUploadAnother: "Upload Another",
+            // Intake Tracker
+            trackerTitle: "Today's Intake Tracker",
+            historyTitle: "Medicine History & Details",
+            colMedicine: "Medicine",
+            colDescription: "Description",
+            colDate: "Date Added",
+            colStatus: "Status",
+            statusActive: "Active",
+            statusPast: "Past"
+        },
+        hi: {
+            settingsTitle: "स्थानीयकरण और भाषा सेटिंग्स",
+            displayLangLabel: "प्रदर्शन भाषा",
+            displayLangDesc: "एप्लिकेशन इंटरफ़ेस के लिए प्राथमिक भाषा चुनें।",
+            voiceLangLabel: "आवाज़ आउटपुट भाषा",
+            voiceLangDesc: "टेक्स्ट-टू-स्पीच शेड्यूल पढ़ने के लिए इस्तेमाल होने वाली भाषा चुनें।",
+            testBtn: "परीक्षण",
+            saveBtn: "सेटिंग्स सहेजें",
+            navDashboard: "डैशबोर्ड",
+            navUpload: "प्रिस्क्रिप्शन अपलोड करें",
+            navMedicine: "दवाओं की सूची",
+            navHistory: "प्रिस्क्रिप्शन का इतिहास",
+            navProfile: "प्रोफ़ाइल",
+            navSettings: "भाषा सेटिंग्स",
+            searchPlaceholder: "दवाएं, रिमाइंडर खोजें...",
+            dashboardTitle: "हेल्थकेयर डैशबोर्ड",
+            statsPrescriptions: "अपलोड किए गए प्रिस्क्रिप्शन",
+            statsMedicines: "मिली हुई दवाएं",
+            statsCompliance: "दवा अनुपालन",
+            statsReminders: "सक्रिय रिमाइंडर",
+            chartTitle: "अनुपालन और अपलोड रुझान",
+            chartDay: "दिन",
+            chartWeek: "सप्ताह",
+            chartMonth: "महीना",
+            profileTitle: "रोगी प्रोफ़ाइल कॉन्फ़िगरेशन",
+            labelAge: "आयु",
+            labelGender: "लिंग",
+            labelBloodGroup: "रक्त समूह",
+            labelHeightWeight: "ऊंचाई / वजन",
+            labelConditions: "ज्ञात स्थितियां",
+            labelEmergency: "आपातकालीन संपर्क",
+            btnEditProfile: "प्रोफ़ाइल जानकारी संपादित करें",
+            linkAccount: "खाता लिंक करें",
+            linkedAccount: "लिंक किया गया खाता",
+            signInGoogle: "गूगल के साथ साइन इन करें",
+            unitYears: "वर्ष",
+            bmiTitle: "बीएमआई कैलकुलेटर",
+            labelHeight: "ऊंचाई (सेमी)",
+            labelWeight: "वजन (किलो)",
+            placeholderHeight: "जैसे, 175",
+            placeholderWeight: "जैसे, 70",
+            btnCalculateBmi: "बीएमआई गणना करें",
+            bmiStatusNormal: "सामान्य वजन",
+            bmiPlaceholderText: "अपना बॉडी मास इंडेक्स गणना करने के लिए अपनी ऊंचाई और वजन दर्ज करें।",
+            scheduleTitle: "शेड्यूल जनरेटर",
+            scheduleDesc: "शेड्यूल बनाने के लिए अपने डॉक्टर के निर्देश टाइप करें या बोलें।",
+            placeholderInstructions: "जैसे, नाश्ते के बाद पैरासिटामोल और सोने से पहले विटामिन डी लें...",
+            btnGenerate: "दवा शेड्यूल बनाएं",
+            yourSchedule: "आपका शेड्यूल",
+            timeMorning: "सुबह",
+            timeAfternoon: "दोपहर",
+            timeEvening: "शाम",
+            timeNight: "रात",
+            uploadTitle: "प्रिस्क्रिप्शन अपलोड करें",
+            uploadDesc: "दवाएं निकालने के लिए छवि अपलोड करें या खींचें",
+            uploadFormats: "समर्थित प्रारूप: JPG, PNG, PDF (अधिकतम 10MB)",
+            extractResult: "निकालने का परिणाम",
+            btnUploadAnother: "दूसरा अपलोड करें",
+            trackerTitle: "आज का सेवन ट्रैकर",
+            historyTitle: "दवा इतिहास और विवरण",
+            colMedicine: "दवा",
+            colDescription: "विवरण",
+            colDate: "जोड़ने की तारीख",
+            colStatus: "स्थिति",
+            statusActive: "सक्रिय",
+            statusPast: "पुराना"
+        },
+        kn: {
+            settingsTitle: "ಸ್ಥಳೀಕರಣ ಮತ್ತು ಭಾಷಾ ಸೆಟ್ಟಿಂಗ್‌ಗಳು",
+            displayLangLabel: "ಪ್ರದರ್ಶನ ಭಾಷೆ",
+            displayLangDesc: "ಅಪ್ಲಿಕೇಶನ್ ಇಂಟರ್‌ಫೇಸ್‌ಗಾಗಿ ಪ್ರಾಥಮಿಕ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ.",
+            voiceLangLabel: "ಧ್ವನಿ ಔಟ್‌ಪುಟ್ ಭಾಷೆ",
+            voiceLangDesc: "ಪಠ್ಯದಿಂದ-ಧ್ವನಿಗೆ ವೇಳಾಪಟ್ಟಿ ಓದುವಿಕೆಗಾಗಿ ಬಳಸಬೇಕಾದ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ.",
+            testBtn: "ಪರೀಕ್ಷೆ",
+            saveBtn: "ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಉಳಿಸಿ",
+            navDashboard: "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
+            navUpload: "ಪ್ರಿಸ್ಕ್ರಿಪ್ಷನ್ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ",
+            navMedicine: "ಔಷಧಿಗಳ ಪಟ್ಟಿ",
+            navHistory: "ಪ್ರಿಸ್ಕ್ರಿಪ್ಷನ್ ಇತಿಹಾಸ",
+            navProfile: "ಪ್ರೊಫೈಲ್",
+            navSettings: "ಭಾಷಾ ಸೆಟ್ಟಿಂಗ್‌ಗಳು",
+            searchPlaceholder: "ಔಷಧಿಗಳು, ಜ್ಞಾಪನೆಗಳನ್ನು ಹುಡುಕಿ...",
+            dashboardTitle: "ಆರೋಗ್ಯ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
+            statsPrescriptions: "ಅಪ್‌ಲೋಡ್ ಮಾಡಿದ ಪ್ರಿಸ್ಕ್ರಿಪ್ಷನ್‌ಗಳು",
+            statsMedicines: "ಪತ್ತೆಯಾದ ಔಷಧಿಗಳು",
+            statsCompliance: "ಔಷಧಿ ಪಾಲನೆ",
+            statsReminders: "ಸಕ್ರಿಯ ಜ್ಞಾಪನೆಗಳು",
+            chartTitle: "ಪಾಲನೆ ಮತ್ತು ಅಪ್‌ಲೋಡ್ ಪ್ರವೃತ್ತಿಗಳು",
+            chartDay: "ದಿನ",
+            chartWeek: "ವಾರ",
+            chartMonth: "ತಿಂಗಳು",
+            profileTitle: "ರೋಗಿಯ ಪ್ರೊಫೈಲ್ ಸಂರಚನೆ",
+            labelAge: "ವಯಸ್ಸು",
+            labelGender: "ಲಿಂಗ",
+            labelBloodGroup: "ರಕ್ತದ ಗುಂಪು",
+            labelHeightWeight: "ಎತ್ತರ / ತೂಕ",
+            labelConditions: "ತಿಳಿದಿರುವ ಪರಿಸ್ಥಿತಿಗಳು",
+            labelEmergency: "ತುರ್ತು ಸಂಪರ್ಕ",
+            btnEditProfile: "ಪ್ರೊಫೈಲ್ ಮಾಹಿತಿ ತಿದ್ದುಪಡಿ",
+            linkAccount: "ಖಾತೆ ಸಂಪರ್ಕಿಸಿ",
+            linkedAccount: "ಸಂಪರ್ಕಿತ ಖಾತೆ",
+            signInGoogle: "ಗೂಗಲ್ ಮೂಲಕ ಸೈನ್ ಇನ್ ಮಾಡಿ",
+            unitYears: "ವರ್ಷಗಳು",
+            bmiTitle: "ಬಿಎಂಐ ಕ್ಯಾಲ್ಕುಲೇಟರ್",
+            labelHeight: "ಎತ್ತರ (ಸೆಂ.ಮೀ)",
+            labelWeight: "ತೂಕ (ಕೆ.ಜಿ)",
+            placeholderHeight: "ಉದಾ: 175",
+            placeholderWeight: "ಉದಾ: 70",
+            btnCalculateBmi: "ಬಿಎಂಐ ಲೆಕ್ಕಾಚಾರ ಮಾಡಿ",
+            bmiStatusNormal: "ಸಾಮಾನ್ಯ ತೂಕ",
+            bmiPlaceholderText: "ನಿಮ್ಮ ಬಾಡಿ ಮಾಸ್ ಇಂಡೆಕ್ಸ್ ಲೆಕ್ಕಾಚಾರ ಮಾಡಲು ನಿಮ್ಮ ಎತ್ತರ ಮತ್ತು ತೂಕವನ್ನು ನಮೂದಿಸಿ.",
+            scheduleTitle: "ವೇಳಾಪಟ್ಟಿ ಜನರೇಟರ್",
+            scheduleDesc: "ವೇಳಾಪಟ್ಟಿಯನ್ನು ರಚಿಸಲು ನಿಮ್ಮ ವೈದ್ಯರ ಸೂಚನೆಗಳನ್ನು ಟೈಪ್ ಮಾಡಿ ಅಥವಾ ಮಾತನಾಡಿ.",
+            placeholderInstructions: "ಉದಾ: ತಿಂಡಿಯ ನಂತರ ಪ್ಯಾರಸಿಟಮಾಲ್ ಮತ್ತು ಮಲಗುವ ಮುನ್ನ ವಿಟಮಿನ್ ಡಿ ತೆಗೆದುಕೊಳ್ಳಿ...",
+            btnGenerate: "ಔಷಧಿ ವೇಳಾಪಟ್ಟಿ ರಚಿಸಿ",
+            yourSchedule: "ನಿಮ್ಮ ವೇಳಾಪಟ್ಟಿ",
+            timeMorning: "ಬೆಳಿಗ್ಗೆ",
+            timeAfternoon: "ಮಧ್ಯಾಹ್ನ",
+            timeEvening: "ಸಂಜೆ",
+            timeNight: "ರಾತ್ರಿ",
+            uploadTitle: "ಪ್ರಿಸ್ಕ್ರಿಪ್ಷನ್ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ",
+            uploadDesc: "ಔಷಧಿಗಳನ್ನು ಹೊರತೆಗೆಯಲು ಚಿತ್ರವನ್ನು ಇಲ್ಲಿ ಕ್ಲಿಕ್ ಮಾಡಿ ಅಥವಾ ಎಳೆಯಿರಿ",
+            uploadFormats: "ಬೆಂಬಲಿತ ಸ್ವರೂಪಗಳು: JPG, PNG, PDF (ಗರಿಷ್ಠ 10MB)",
+            extractResult: "ಹೊರತೆಗೆದ ಫಲಿತಾಂಶ",
+            btnUploadAnother: "ಮತ್ತೊಂದು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ",
+            trackerTitle: "ಇಂದಿನ ಸೇವನೆ ಟ್ರ್ಯಾಕರ್",
+            historyTitle: "ಔಷಧಿ ಇತಿಹಾಸ ಮತ್ತು ವಿವರಗಳು",
+            colMedicine: "ಔಷಧಿ",
+            colDescription: "ವಿವರಣೆ",
+            colDate: "ಸೇರಿಸಲಾದ ದಿನಾಂಕ",
+            colStatus: "ಸ್ಥಿತಿ",
+            statusActive: "ಸಕ್ರಿಯ",
+            statusPast: "ಹಳೆಯದು"
+        },
+        ta: {
+            settingsTitle: "உள்ளூர்மயமாக்கல் மற்றும் மொழி அமைப்புகள்",
+            displayLangLabel: "காட்சி மொழி",
+            displayLangDesc: "பயன்பாட்டு இடைமுகத்திற்கான முதன்மை மொழியைத் தேர்வுசெய்க.",
+            voiceLangLabel: "குரல் வெளியீட்டு மொழி",
+            voiceLangDesc: "உரை-க்கு-குரல் அட்டவணை வாசிப்புக்கு பயன்படுத்த வேண்டிய மொழியைத் தேர்ந்தெடுக்கவும்.",
+            testBtn: "சோதனை",
+            saveBtn: "அமைப்புகளைச் சேமி",
+            navDashboard: "டாஷ்போர்டு",
+            navUpload: "மருந்து சீட்டை பதிவேற்றவும்",
+            navMedicine: "மருந்துகளின் பட்டியல்",
+            navHistory: "மருந்து சீட்டு வரலாறு",
+            navProfile: "சுயவிவரம்",
+            navSettings: "மொழி அமைப்புகள்",
+            searchPlaceholder: "மருந்துகள், நினைவூட்டல்களைத் தேடுங்கள்...",
+            dashboardTitle: "சுகாதார டாஷ்போர்டு",
+            statsPrescriptions: "பதிவேற்றப்பட்ட மருந்து சீட்டுகள்",
+            statsMedicines: "கண்டறியப்பட்ட மருந்துகள்",
+            statsCompliance: "மருந்து இணக்கம்",
+            statsReminders: "செயலில் உள்ள நினைவூட்டல்கள்",
+            chartTitle: "இணக்கம் மற்றும் பதிவேற்ற போக்குகள்",
+            chartDay: "நாள்",
+            chartWeek: "வாரம்",
+            chartMonth: "மாதம்",
+            profileTitle: "நோயாளி சுயவிவர கட்டமைப்பு",
+            labelAge: "வயது",
+            labelGender: "பாலினம்",
+            labelBloodGroup: "இரத்த வகை",
+            labelHeightWeight: "உயரம் / எடை",
+            labelConditions: "அறிந்த பாதிப்புகள்",
+            labelEmergency: "அவசர தொடர்பு",
+            btnEditProfile: "சுயவிவர தகவலைத் திருத்தவும்",
+            linkAccount: "கணக்கை இணைக்கவும்",
+            linkedAccount: "இணைக்கப்பட்ட கணக்கு",
+            signInGoogle: "கூகிள் மூலம் உள்நுழைக",
+            unitYears: "ஆண்டுகள்",
+            bmiTitle: "பிஎம்ஐ கால்குலேட்டர்",
+            labelHeight: "உயரம் (செ.மீ)",
+            labelWeight: "எடை (கி.கி)",
+            placeholderHeight: "உதாரணம்: 175",
+            placeholderWeight: "உதாரணம்: 70",
+            btnCalculateBmi: "பிஎம்ஐ கணக்கிடுங்கள்",
+            bmiStatusNormal: "சாதாரண எடை",
+            bmiPlaceholderText: "உங்கள் உடல் நிறை குறியீட்டைக் கணக்கிட உங்கள் உயரம் மற்றும் எடையை உள்ளிடவும்.",
+            scheduleTitle: "அட்டவணை உருவாக்கி",
+            scheduleDesc: "அட்டவணையை உருவாக்க உங்கள் மருத்துவரின் வழிமுறைகளைத் தட்டச்சு செய்யவும் அல்லது பேசவும்.",
+            placeholderInstructions: "உதாரணம்: காலை உணவிற்குப் பிறகு பாராசிட்டமால் மற்றும் தூங்குவதற்கு முன் வைட்டமின் ಡಿ ತೆಗೆದುಕೊಳ್ಳಿ...",
+            btnGenerate: "மருந்து அட்டவணையை உருவாக்கு",
+            yourSchedule: "உங்கள் அட்டவணை",
+            timeMorning: "காலை",
+            timeAfternoon: "மதியம்",
+            timeEvening: "மாலை",
+            timeNight: "இரவு",
+            uploadTitle: "மருந்து சீட்டை பதிவேற்றவும்",
+            uploadDesc: "மருந்துகளை பிரித்தெடுக்க படத்தை அப்லோட் செய்யவும் அல்லது இழுக்கவும்",
+            uploadFormats: "ஆதரிக்கப்படும் வடிவங்கள்: JPG, PNG, PDF (அதிகபட்சம் 10MB)",
+            extractResult: "பிரித்தெடுத்த முடிவு",
+            btnUploadAnother: "மற்றொன்றை பதிவேற்றவும்",
+            trackerTitle: "இன்றைய உட்கொள்ளல் டிராக்கர்",
+            historyTitle: "மருந்து வரலாறு மற்றும் விவரங்கள்",
+            colMedicine: "மருந்து",
+            colDescription: "விளக்கம்",
+            colDate: "சேர்க்கப்பட்ட தேதி",
+            colStatus: "நிலை",
+            statusActive: "செயலில்",
+            statusPast: "கடந்த"
+        },
+        te: {
+            settingsTitle: "స్థానికీకరణ మరియు భాషా సెట్ంగ్‌లు",
+            displayLangLabel: "ప్రదర్శన భాష",
+            displayLangDesc: "అప్లికేషన్ ఇంటర్‌ఫేస్ కోసం ప్రాథమిక భాషను ఎంచుకోండి.",
+            voiceLangLabel: "వాయిస్ అవుట్‌పుట్ భాష",
+            voiceLangDesc: "టెక్స్ట్-టు-స్పీచ్ షెడ్యూల్ చదవడానికి ఉపయోగించాల్సిన భాషను ఎంచుకోండి.",
+            testBtn: "పరీక్ష",
+            saveBtn: "సెట్టింగ్‌లను సేవ్ చేయండి",
+            navDashboard: "డ్యాష్‌బోర్డ్",
+            navUpload: "ప్రిస్క్రిప్షన్ అప్‌లోడ్ చేయండి",
+            navMedicine: "మందుల జాబితా",
+            navHistory: "ప్రిస్క్రిప్షన్ చరిత్ర",
+            navProfile: "ప్రొఫైల్",
+            navSettings: "భాషా సెట్టింగ్‌లు",
+            searchPlaceholder: "మందులు, రిమైండర్‌ల కోసం వెతకండి...",
+            dashboardTitle: "హెల్త్‌కేర్ డ్యాష్‌బోర్డ్",
+            statsPrescriptions: "అప్‌లోడ్ చేసిన ప్రిస్క్రిప్షన్లు",
+            statsMedicines: "గుర్తించిన మందులు",
+            statsCompliance: "మందుల వాడకం క్రమబద్ధత",
+            statsReminders: "యాక్టివ్ రిమైండర్‌లు",
+            chartTitle: "క్రమబద్ధత మరియు అప్‌లోడ్ ట్రెండ్‌లు",
+            chartDay: "రోజు",
+            chartWeek: "వారం",
+            chartMonth: "నెల",
+            profileTitle: "పేషెంట్ ప్రొఫైల్ కాన్ఫిగరేషన్",
+            labelAge: "వయస్సు",
+            labelGender: "లింగం",
+            labelBloodGroup: "బ్లడ్ గ్రూప్",
+            labelHeightWeight: "ఎత్తు / బరువు",
+            labelConditions: "తెలిసిన ఆరోగ్య పరిస్థితులు",
+            labelEmergency: "ఎమర్జెన్సీ కాంటాక్ట్",
+            btnEditProfile: "ప్రొఫైల్ సమాచారాన్ని సవరించండి",
+            linkAccount: "ఖాతాను లింక్ చేయండి",
+            linkedAccount: "లింక్ చేసిన ఖాతా",
+            signInGoogle: "గూగుల్‌తో సైన్ ఇన్ చేయండి",
+            unitYears: "సంవత్సరాలు",
+            bmiTitle: "BMI కాలిక్యులేటర్",
+            labelHeight: "ఎత్తు (సెం.మీ)",
+            labelWeight: "బరువు (కేజీలు)",
+            placeholderHeight: "ఉదా: 175",
+            placeholderWeight: "ఉదా: 70",
+            btnCalculateBmi: "BMI లెక్కించండి",
+            bmiStatusNormal: "సాధారణ బరువు",
+            bmiPlaceholderText: "మీ బాడీ మాస్ ఇండెక్స్ లెక్కించడానికి మీ ఎత్తు మరియు బరువును నమోదు చేయండి.",
+            scheduleTitle: "షెడ్యూల్ జనరేటర్",
+            scheduleDesc: "షెడ్యూల్ రూపొందించడానికి మీ డాక్టర్ సూచనలను టైప్ చేయండి లేదా మాట్లాడండి.",
+            placeholderInstructions: "ఉదా: బ్రేక్‌ఫాస్ట్ తర్వాత పారాసెటమాల్ మరియు పడుకునే ముందు విటమిన్ డి తీసుకోండి...",
+            btnGenerate: "మెడిసిన్ షెడ్యూల్ రూపొందించు",
+            yourSchedule: "మీ షెడ్యూల్",
+            timeMorning: "ఉదయం",
+            timeAfternoon: "మధ్యాహ్నం",
+            timeEvening: "సాయంత్రం",
+            timeNight: "రాత్రి",
+            uploadTitle: "ప్రిస్క్రిప్షన్ అప్‌లోడ్ చేయండి",
+            uploadDesc: "మందులను సేకరించడానికి చిత్రాన్ని అప్‌లోడ్ చేయండి లేదా ఇక్కడకు లాగండి",
+            uploadFormats: "సపోర్టెడ్ ఫార్మాట్లు: JPG, PNG, PDF (గరిష్టంగా 10MB)",
+            extractResult: "సేకరించిన ఫలితం",
+            btnUploadAnother: "మరొకటి అప్‌లోడ్ చేయండి",
+            trackerTitle: "నేటి మందుల ట్రాకర్",
+            historyTitle: "మెడిసిన్ హిస్టరీ & వివరాలు",
+            colMedicine: "మెడిసిన్",
+            colDescription: "వివరణ",
+            colDate: "జోడించిన తేదీ",
+            colStatus: "స్టేటస్",
+            statusActive: "యాక్టివ్",
+            statusPast: "గతంలో"
+        }
+    };
+
+    function applyTranslations(lang) {
+        if (!uiTranslations[lang]) return;
+        const trans = uiTranslations[lang];
+        
+        // Translate text content
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (trans[key]) {
+                el.textContent = trans[key];
+            }
+        });
+
+        // Translate placeholders
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            if (trans[key]) {
+                el.placeholder = trans[key];
+            }
+        });
+        
+        // Sync all language selectors
+        const globalLang = document.getElementById('global-lang');
+        const pageLangSelector = document.getElementById('page-lang-selector');
+        const schedLangEl = document.getElementById('schedule-lang');
+        
+        if (globalLang && globalLang.value !== lang) globalLang.value = lang;
+        if (pageLangSelector && pageLangSelector.value !== lang) pageLangSelector.value = lang;
+        if (schedLangEl && schedLangEl.value !== lang) schedLangEl.value = lang;
+
+        // Save language selection globally
+        localStorage.setItem('prescripto_lang', lang);
+    }
+
+    // Apply saved language on load
+    const savedLang = localStorage.getItem('prescripto_lang') || 'en';
+    applyTranslations(savedLang);
+
+    // Language selector change events
+    const pageLangSelector = document.getElementById('page-lang-selector');
+    if (pageLangSelector) {
+        pageLangSelector.addEventListener('change', (e) => {
+            applyTranslations(e.target.value);
         });
     }
 
@@ -568,10 +958,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const globalLang = document.getElementById('global-lang');
     if (globalLang) {
         globalLang.addEventListener('change', (e) => {
-            const schedLangEl = document.getElementById('schedule-lang');
-            if (schedLangEl) {
-                schedLangEl.value = e.target.value;
-            }
+            applyTranslations(e.target.value);
         });
     }
 });

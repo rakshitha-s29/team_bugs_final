@@ -4,9 +4,15 @@ import os
 import re
 import pytesseract
 from PIL import Image
+from google.oauth2 import id_token
+from google.auth.transport import requests as google_requests
+import requests
+from datetime import datetime
 
 # Configure tesseract executable path since we are on Windows
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
+GOOGLE_CLIENT_ID = "725427460622-eglmp3igtau3rb4vai1ag47u9cr42s4g.apps.googleusercontent.com"
 
 # Create Flask app
 # Point static folder and template folder to the frontend directory so we don't need a separate static folder
@@ -35,6 +41,26 @@ class ScheduleItem(db.Model):
             "medicine_name": self.medicine_name,
             "time_of_day": self.time_of_day,
             "instructions": self.instructions
+        }
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    google_id = db.Column(db.String(100), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    age = db.Column(db.Integer, nullable=True)
+    gender = db.Column(db.String(20), nullable=True)
+    blood_group = db.Column(db.String(10), nullable=True)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "google_id": self.google_id,
+            "email": self.email,
+            "name": self.name,
+            "age": self.age,
+            "gender": self.gender,
+            "blood_group": self.blood_group
         }
 
 # Create the database tables if they don't exist
@@ -275,6 +301,95 @@ def save_medicine():
     db.session.commit()
 
     return jsonify({"message": "Medicine saved successfully!", "item": new_item.to_dict()}), 201
+
+@app.route('/api/google-login', methods=['POST'])
+def google_login():
+    data = request.get_json()
+    access_token = data.get('access_token', '')
+
+    if not access_token:
+        return jsonify({"success": False, "message": "Missing access token"}), 400
+
+    try:
+        # Fetch user profile using People API
+        headers = {'Authorization': f'Bearer {access_token}'}
+        people_api_url = 'https://people.googleapis.com/v1/people/me?personFields=names,emailAddresses,birthdays,genders'
+        response = requests.get(people_api_url, headers=headers)
+        
+        if response.status_code != 200:
+            return jsonify({"success": False, "message": "Failed to fetch profile from Google"}), 400
+            
+        profile_data = response.json()
+        
+        # Extract basic data
+        google_user_id = profile_data.get('resourceName', '').replace('people/', '')
+        email = profile_data.get('emailAddresses', [{}])[0].get('value', '')
+        name = profile_data.get('names', [{}])[0].get('displayName', '')
+        
+        if not email or not google_user_id:
+            return jsonify({"success": False, "message": "Could not extract essential profile info"}), 400
+
+        # Extract extra data: Gender
+        gender = None
+        genders_list = profile_data.get('genders', [])
+        if genders_list:
+            raw_gender = genders_list[0].get('value', '').lower()
+            if raw_gender == 'male':
+                gender = 'Male'
+            elif raw_gender == 'female':
+                gender = 'Female'
+            else:
+                gender = raw_gender.capitalize()
+                
+        # Extract extra data: Age Calculation
+        age = None
+        birthdays_list = profile_data.get('birthdays', [])
+        for b in birthdays_list:
+            date_info = b.get('date', {})
+            year = date_info.get('year')
+            month = date_info.get('month')
+            day = date_info.get('day')
+            
+            if year and month and day:
+                today = datetime.today()
+                age = today.year - year - ((today.month, today.day) < (month, day))
+                break # Just use the first valid birthday found
+
+        # Handle database logic
+        user = User.query.filter_by(google_id=google_user_id).first()
+        if not user:
+            user = User(
+                email=email, 
+                name=name, 
+                google_id=google_user_id,
+                gender=gender,
+                age=age
+            )
+            db.session.add(user)
+        else:
+            # Update existing user if they provided new info
+            updated = False
+            if gender and not user.gender:
+                user.gender = gender
+                updated = True
+            if age and not user.age:
+                user.age = age
+                updated = True
+            if updated:
+                db.session.add(user)
+        
+        db.session.commit()
+
+        return jsonify({
+            "success": True, 
+            "message": "Login successful",
+            "user": user.to_dict()
+        }), 200
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"success": False, "message": str(e)}), 500
 
 if __name__ == '__main__':
     # Run the Flask app

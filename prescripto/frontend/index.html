@@ -22,12 +22,12 @@
                 </div>
             </a>
             <ul class="nav-links">
-                <li class="active"><a href="/dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
-                <li><a href="/upload"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Prescription</a></li>
-                <li><a href="/medicines"><i class="fa-solid fa-pills"></i> Medicine List</a></li>
-                <li><a href="/history"><i class="fa-solid fa-clock-rotate-left"></i> Prescription History</a></li>
-                <li><a href="/profile"><i class="fa-regular fa-user"></i> Profile</a></li>
-                <li><a href="/settings"><i class="fa-solid fa-language"></i> Language Settings</a></li>
+                <li class="active"><a href="/dashboard"><i class="fa-solid fa-chart-pie"></i> <span data-i18n="navDashboard">Dashboard</span></a></li>
+                <li><a href="/upload"><i class="fa-solid fa-cloud-arrow-up"></i> <span data-i18n="navUpload">Upload Prescription</span></a></li>
+                <li><a href="/medicines"><i class="fa-solid fa-pills"></i> <span data-i18n="navMedicine">Medicine List</span></a></li>
+                <li><a href="/history"><i class="fa-solid fa-clock-rotate-left"></i> <span data-i18n="navHistory">Prescription History</span></a></li>
+                <li><a href="/profile"><i class="fa-regular fa-user"></i> <span data-i18n="navProfile">Profile</span></a></li>
+                <li><a href="/settings"><i class="fa-solid fa-language"></i> <span data-i18n="navSettings">Language Settings</span></a></li>
             </ul>
         </aside>
 
@@ -39,7 +39,7 @@
                     <button id="sidebar-toggle" class="menu-btn"><i class="fa-solid fa-bars"></i></button>
                     <div class="search-bar">
                         <i class="fa-solid fa-search"></i>
-                        <input type="text" placeholder="Search medicines, reminders...">
+                        <input type="text" data-i18n-placeholder="searchPlaceholder" placeholder="Search medicines, reminders...">
                     </div>
                 </div>
                 <div class="header-right">
@@ -64,7 +64,7 @@
                             <i class="fa-solid fa-file-medical"></i>
                         </div>
                         <div class="stat-details">
-                            <h3>Prescriptions Uploaded</h3>
+                            <h3 data-i18n="statsPrescriptions">Prescriptions Uploaded</h3>
                             <p class="stat-number">12</p>
                         </div>
                     </div>
@@ -73,7 +73,7 @@
                             <i class="fa-solid fa-capsules"></i>
                         </div>
                         <div class="stat-details">
-                            <h3>Medicines Detected</h3>
+                            <h3 data-i18n="statsMedicines">Medicines Detected</h3>
                             <p class="stat-number">24</p>
                         </div>
                     </div>
@@ -82,7 +82,7 @@
                             <i class="fa-solid fa-heart-pulse"></i>
                         </div>
                         <div class="stat-details">
-                            <h3>Medicine Compliance</h3>
+                            <h3 data-i18n="statsCompliance">Medicine Compliance</h3>
                             <p class="stat-number">85%</p>
                             <p class="stat-growth success"><i class="fa-solid fa-arrow-up"></i> 2.5%</p>
                         </div>
@@ -92,7 +92,7 @@
                             <i class="fa-solid fa-bell"></i>
                         </div>
                         <div class="stat-details">
-                            <h3>Active Reminders</h3>
+                            <h3 data-i18n="statsReminders">Active Reminders</h3>
                             <p class="stat-number">4</p>
                         </div>
                     </div>
@@ -101,11 +101,11 @@
                 <!-- Chart Section -->
                 <div class="chart-panel panel">
                     <div class="panel-header">
-                        <h3>Compliance & Upload Trends</h3>
+                        <h3 data-i18n="chartTitle">Compliance & Upload Trends</h3>
                         <div class="chart-options">
-                            <button class="active">Day</button>
-                            <button>Week</button>
-                            <button>Month</button>
+                            <button class="active" data-i18n="chartDay">Day</button>
+                            <button data-i18n="chartWeek">Week</button>
+                            <button data-i18n="chartMonth">Month</button>
                         </div>
                     </div>
                     <div class="chart-container">
@@ -120,16 +120,16 @@
                         <!-- Profile Panel -->
                         <div class="panel profile-panel">
                             <div class="panel-header">
-                                <h3>Patient Profile</h3>
+                                <h3 data-i18n="profileTitle">Patient Profile</h3>
                             </div>
                             <div class="profile-details">
                                 <img src="https://ui-avatars.com/api/?name=John+Doe&background=e0f2fe&color=0284c7&size=100"
                                     alt="John Doe" class="profile-img-large">
                                 <div class="info">
                                     <h2>John Doe</h2>
-                                    <p><strong>Age:</strong> 45</p>
-                                    <p><strong>Gender:</strong> Male</p>
-                                    <p><strong>Conditions:</strong> Hypertension, Mild Asthma</p>
+                                    <p><strong data-i18n="labelAge">Age:</strong> 45</p>
+                                    <p><strong data-i18n="labelGender">Gender:</strong> Male</p>
+                                    <p><strong data-i18n="labelConditions">Conditions:</strong> Hypertension, Mild Asthma</p>
                                 </div>
                             </div>
                         </div>
@@ -137,12 +137,12 @@
                         <!-- Schedule Generator -->
                         <div class="panel schedule-panel">
                             <div class="panel-header">
-                                <h3>Schedule Generator</h3>
+                                <h3 data-i18n="scheduleTitle">Schedule Generator</h3>
                             </div>
                             <div class="generator-body">
-                                <p class="text-sm">Type or speak your doctor's instructions to generate a schedule.</p>
+                                <p class="text-sm" data-i18n="scheduleDesc">Type or speak your doctor's instructions to generate a schedule.</p>
                                 <div class="input-group">
-                                    <textarea id="instruction-input"
+                                    <textarea id="instruction-input" data-i18n-placeholder="placeholderInstructions"
                                         placeholder="E.g., Take Paracetamol after breakfast and Vitamin D before bed..."></textarea>
                                     <button class="voice-btn" id="voice-btn" title="Click to speak">
                                         <i class="fa-solid fa-microphone"></i>
@@ -154,22 +154,22 @@
                                         <option value="hi">Hindi</option>
                                         <option value="kn">Kannada</option>
                                     </select>
-                                    <button class="btn-primary" id="generate-btn">Generate Medicine Schedule</button>
+                                    <button class="btn-primary" id="generate-btn" data-i18n="btnGenerate">Generate Medicine Schedule</button>
                                 </div>
                                 <div id="generated-schedule" class="hidden">
-                                    <h4>Your Schedule</h4>
+                                    <h4 data-i18n="yourSchedule">Your Schedule</h4>
                                     <div class="schedule-times">
                                         <div class="time-block">
-                                            <h5><i class="fa-regular fa-sun"></i> Morning</h5>
+                                            <h5><i class="fa-regular fa-sun"></i> <span data-i18n="timeMorning">Morning</span></h5>
                                             <ul id="morning-list"></ul>
                                         </div>
                                         <div class="time-block">
                                             <h5><i class="fa-solid fa-sun-bright"
-                                                    style="color:var(--clr-dark-blue)"></i> Afternoon</h5>
+                                                    style="color:var(--clr-dark-blue)"></i> <span data-i18n="timeAfternoon">Afternoon</span></h5>
                                             <ul id="afternoon-list"></ul>
                                         </div>
                                         <div class="time-block">
-                                            <h5><i class="fa-solid fa-moon"></i> Night</h5>
+                                            <h5><i class="fa-solid fa-moon"></i> <span data-i18n="timeNight">Night</span></h5>
                                             <ul id="night-list"></ul>
                                         </div>
                                     </div>
@@ -180,15 +180,15 @@
                         <!-- Upload Simulation -->
                         <div class="panel upload-panel">
                             <div class="panel-header">
-                                <h3>Upload Prescription</h3>
+                                <h3 data-i18n="uploadTitle">Upload Prescription</h3>
                             </div>
                             <div class="upload-area" id="upload-area">
                                 <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
-                                <p>Click or drag image to upload and extract medicines</p>
+                                <p data-i18n="uploadDesc">Click or drag image to upload and extract medicines</p>
                                 <input type="file" id="file-input" hidden accept="image/*">
                             </div>
                             <div id="upload-result" class="hidden">
-                                <h4>Extraction Result</h4>
+                                <h4 data-i18n="extractResult">Extraction Result</h4>
                                 <ul class="extracted-list" id="extracted-medicines">
                                     <!-- Populated by JS -->
                                 </ul>
@@ -201,13 +201,13 @@
                         <!-- Medicine Intake Tracker -->
                         <div class="panel tracker-panel">
                             <div class="panel-header">
-                                <h3>Today's Intake Tracker</h3>
+                                <h3 data-i18n="trackerTitle">Today's Intake Tracker</h3>
                                 <span class="date-badge" id="current-date">Today</span>
                             </div>
                             <div class="tracker-list">
                                 <div class="tracker-item">
                                     <div class="tracker-info">
-                                        <h4>Paracetamol <span class="badge-time">Morning</span></h4>
+                                        <h4>Paracetamol <span class="badge-time" data-i18n="timeMorning">Morning</span></h4>
                                         <p>Fever relief</p>
                                     </div>
                                     <label class="custom-checkbox">
@@ -217,7 +217,7 @@
                                 </div>
                                 <div class="tracker-item">
                                     <div class="tracker-info">
-                                        <h4>Amoxicillin <span class="badge-time">Afternoon</span></h4>
+                                        <h4>Amoxicillin <span class="badge-time" data-i18n="timeAfternoon">Afternoon</span></h4>
                                         <p>Antibiotic</p>
                                     </div>
                                     <label class="custom-checkbox">
@@ -227,7 +227,7 @@
                                 </div>
                                 <div class="tracker-item">
                                     <div class="tracker-info">
-                                        <h4>Vitamin D <span class="badge-time">Night</span></h4>
+                                        <h4>Vitamin D <span class="badge-time" data-i18n="timeNight">Night</span></h4>
                                         <p>Bone health</p>
                                     </div>
                                     <label class="custom-checkbox">
@@ -241,15 +241,15 @@
                         <!-- Medicine History & Description -->
                         <div class="panel history-panel">
                             <div class="panel-header">
-                                <h3>Medicine History & Details</h3>
+                                <h3 data-i18n="historyTitle">Medicine History & Details</h3>
                             </div>
                             <div class="table-responsive">
                                 <table class="medicine-table">
                                     <thead>
                                         <tr>
-                                            <th>Medicine</th>
-                                            <th>Description</th>
-                                            <th>Status</th>
+                                            <th data-i18n="colMedicine">Medicine</th>
+                                            <th data-i18n="colDescription">Description</th>
+                                            <th data-i18n="colStatus">Status</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -271,7 +271,7 @@
                                         <tr>
                                             <td><strong>Ibuprofen</strong></td>
                                             <td>Anti-inflammatory</td>
-                                            <td><span class="status-badge inactive">Past</span></td>
+                                            <td><span class="status-badge inactive" data-i18n="statusPast">Past</span></td>
                                         </tr>
                                     </tbody>
                                 </table>

@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 
 <body>
@@ -22,12 +23,12 @@
                 </div>
             </a>
             <ul class="nav-links">
-                <li><a href="/dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
-                <li><a href="/upload"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Prescription</a></li>
-                <li><a href="/medicines"><i class="fa-solid fa-pills"></i> Medicine List</a></li>
-                <li><a href="/history"><i class="fa-solid fa-clock-rotate-left"></i> Prescription History</a></li>
-                <li class="active"><a href="/profile"><i class="fa-regular fa-user"></i> Profile</a></li>
-                <li><a href="/settings"><i class="fa-solid fa-language"></i> Language Settings</a></li>
+                <li><a href="/dashboard"><i class="fa-solid fa-chart-pie"></i> <span data-i18n="navDashboard">Dashboard</span></a></li>
+                <li><a href="/upload"><i class="fa-solid fa-cloud-arrow-up"></i> <span data-i18n="navUpload">Upload Prescription</span></a></li>
+                <li><a href="/medicines"><i class="fa-solid fa-pills"></i> <span data-i18n="navMedicine">Medicine List</span></a></li>
+                <li><a href="/history"><i class="fa-solid fa-clock-rotate-left"></i> <span data-i18n="navHistory">Prescription History</span></a></li>
+                <li class="active"><a href="/profile"><i class="fa-regular fa-user"></i> <span data-i18n="navProfile">Profile</span></a></li>
+                <li><a href="/settings"><i class="fa-solid fa-language"></i> <span data-i18n="navSettings">Language Settings</span></a></li>
             </ul>
         </aside>
 
@@ -39,7 +40,7 @@
                     <button id="sidebar-toggle" class="menu-btn"><i class="fa-solid fa-bars"></i></button>
                     <div class="search-bar">
                         <i class="fa-solid fa-search"></i>
-                        <input type="text" placeholder="Search medicines, reminders...">
+                        <input type="text" data-i18n-placeholder="searchPlaceholder" placeholder="Search medicines, reminders...">
                     </div>
                 </div>
                 <div class="header-right">
@@ -117,7 +118,7 @@
                 <div class="panel profile-panel" style="margin-top: 2rem; padding: 3rem;">
                     <div class="panel-header"
                         style="margin-bottom: 2rem; border-bottom: 1px solid var(--clr-light-blue); padding-bottom: 1rem;">
-                        <h2 style="font-size: 1.8rem; color: var(--clr-dark-blue);">Patient Profile Configuration</h2>
+                        <h2 style="font-size: 1.8rem; color: var(--clr-dark-blue);" data-i18n="profileConfigTitle">Patient Profile Configuration</h2>
                     </div>
                     <div class="profile-details"
                         style="display: flex; flex-direction: row; gap: 3rem; align-items: flex-start;">
@@ -130,11 +131,11 @@
 
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem;">
                                 <div>
-                                    <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.2rem;">Age</p>
+                                    <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.2rem;" data-i18n="labelAge">Age</p>
                                     <p><strong>45 Years</strong></p>
                                 </div>
                                 <div>
-                                    <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.2rem;">Gender
+                                    <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 0.2rem;" data-i18n="labelGender">Gender
                                     </p>
                                     <p><strong>Male</strong></p>
                                 </div>
@@ -169,8 +170,35 @@
                             </div>
 
                             <button class="btn-primary"
-                                style="margin-top: 3rem; padding: 1rem 2rem; font-size: 1.1rem;"><i
-                                    class="fa-solid fa-pen-to-square"></i> Edit Profile Information</button>
+                                    class="fa-solid fa-pen-to-square"></i> <span data-i18n="btnEditProfile">Edit Profile Information</span></button>
+                                    
+                            <div id="link-account-section" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--clr-light-blue);">
+                                <h3 style="margin-bottom: 1rem; color: var(--clr-dark-blue);">Link Account</h3>
+                                <button class="btn-primary" id="google-auth-btn" style="background: white; color: #333; border: 1px solid #ccc; padding: 0.5rem 1rem; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem; border-radius: 4px; cursor: pointer; font-weight: 500;">
+                                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" style="width: 20px; height: 20px;">
+                                        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+                                        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+                                        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+                                        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                                        <path fill="none" d="M0 0h48v48H0z"></path>
+                                    </svg>
+                                    Sign in with Google
+                                </button>
+                            </div>
+                            
+                            <div id="linked-account-info" style="display: none; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--clr-light-blue);">
+                                <h3 style="margin-bottom: 1rem; color: var(--clr-dark-blue);">Linked Account</h3>
+                                <div style="display: flex; align-items: center; gap: 1rem; background: #f8fafc; padding: 1rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+                                    <i class="fa-brands fa-google" style="color: #ea4335; font-size: 1.5rem;"></i>
+                                    <div>
+                                        <p style="font-weight: 600; color: var(--clr-dark-blue);" id="google-linked-name">Google Account</p>
+                                        <p style="color: var(--clr-gray); font-size: 0.9rem;" id="google-linked-email">Connected</p>
+                                    </div>
+                                    <button class="btn-primary" id="btn-logout" style="margin-left: auto; background: #ef4444; padding: 0.5rem 1rem; font-size: 0.9rem;">
+                                        <i class="fa-solid fa-arrow-right-from-bracket"></i> Unlink Log Out
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -179,26 +207,26 @@
                 <div class="panel profile-panel" style="margin-top: 2rem; padding: 3rem;">
                     <div class="panel-header"
                         style="margin-bottom: 2rem; border-bottom: 1px solid var(--clr-light-blue); padding-bottom: 1rem;">
-                        <h2 style="font-size: 1.8rem; color: var(--clr-dark-blue);"><i class="fa-solid fa-weight-scale"></i> BMI Calculator</h2>
+                        <h2 style="font-size: 1.8rem; color: var(--clr-dark-blue);" data-i18n="bmiCalculatorTitle"><i class="fa-solid fa-weight-scale"></i> BMI Calculator</h2>
                     </div>
                     
                     <div class="bmi-calculator" style="display: flex; gap: 4rem; align-items: center; justify-content: space-between;">
                         <div class="bmi-inputs" style="flex: 1;">
                             <div style="margin-bottom: 1.5rem;">
-                                <label for="bmi-height" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--clr-dark-blue);">Height (cm)</label>
+                                <label for="bmi-height" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--clr-dark-blue);" data-i18n="labelHeight">Height (cm)</label>
                                 <input type="number" id="bmi-height" placeholder="e.g., 175" style="width: 100%; padding: 1rem; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 1.1rem; outline: none; transition: border-color 0.3s ease;">
                             </div>
                             <div style="margin-bottom: 1.5rem;">
-                                <label for="bmi-weight" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--clr-dark-blue);">Weight (kg)</label>
+                                <label for="bmi-weight" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--clr-dark-blue);" data-i18n="labelWeight">Weight (kg)</label>
                                 <input type="number" id="bmi-weight" placeholder="e.g., 70" style="width: 100%; padding: 1rem; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 1.1rem; outline: none; transition: border-color 0.3s ease;">
                             </div>
-                            <button class="btn-primary" id="calculate-bmi-btn" style="width: 100%; padding: 1rem; font-size: 1.2rem; margin-top: 1rem;">Calculate BMI</button>
+                            <button class="btn-primary" id="calculate-bmi-btn" style="width: 100%; padding: 1rem; font-size: 1.2rem; margin-top: 1rem;" data-i18n="btnCalculateBMI">Calculate BMI</button>
                         </div>
                         
                         <div class="bmi-result-area" style="flex: 1; min-height: 250px; background: #f8fafc; border-radius: 20px; padding: 2.5rem; text-align: center; border: 2px dashed #cbd5e1; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                             <div id="bmi-placeholder">
                                 <i class="fa-solid fa-calculator" style="font-size: 4rem; color: #94a3b8; margin-bottom: 1rem;"></i>
-                                <p style="color: #64748b; font-size: 1.2rem;">Enter your height and weight to calculate your Body Mass Index.</p>
+                                <p style="color: #64748b; font-size: 1.2rem;" data-i18n="bmiDesc">Enter your height and weight to calculate your Body Mass Index.</p>
                             </div>
                             <div id="bmi-result" class="hidden">
                                 <h3 style="font-size: 1.5rem; color: var(--clr-gray); margin-bottom: 0.5rem;">Your BMI Is</h3>
@@ -379,6 +407,108 @@
         </main>
     </div>
     <script src="script.js"></script>
+    <script>
+        let tokenClient;
+        const GOOGLE_CLIENT_ID = "725427460622-eglmp3igtau3rb4vai1ag47u9cr42s4g.apps.googleusercontent.com";
+
+        // This function handles the response from Google's authorization popup
+        function handleAuthResponse(response) {
+            if (response.error !== undefined) {
+                console.error("Error asking for google scopes", response);
+                alert("Google authorization failed.");
+                return;
+            }
+            
+            // The response contains an access_token we will use in our backend
+            const accessToken = response.access_token;
+            
+            fetch('/api/google-login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ access_token: accessToken })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Successfully logged in and fetched data from Google for ' + data.user.name + '!');
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    window.location.reload();
+                } else {
+                    alert('Backend login failed: ' + data.message);
+                }
+            })
+            .catch(err => {
+                console.error("Error logging in with backend:", err);
+                alert("An error occurred during backend verification.");
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // UI Hydration from Storage
+            const user = localStorage.getItem('user');
+            if (user) {
+                const userData = JSON.parse(user);
+                
+                // Update names and avatars
+                const nameElements = document.querySelectorAll('.info h2');
+                if (nameElements.length) nameElements[0].textContent = userData.name;
+                
+                // Set the specific new profile fields if they exist
+                const profileDetailValues = document.querySelectorAll('.info .grid > div > p:nth-child(2) strong');
+                // The order in the HTML is: Age, Gender, Blood Group, Height/Weight. We only update Age/Gender if available
+                const infoGrid = document.querySelector('.info > div[style*="grid"]');
+                if (infoGrid) {
+                    const infoBlocks = infoGrid.querySelectorAll('div');
+                    if (infoBlocks.length >= 2) {
+                        if (userData.age) infoBlocks[0].querySelector('strong').textContent = userData.age + ' Years';
+                        if (userData.gender) infoBlocks[1].querySelector('strong').textContent = userData.gender;
+                    }
+                }
+                
+                const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=e0f2fe&color=0284c7`;
+                document.querySelectorAll('.avatar, .profile-img-large').forEach(img => img.src = avatarUrl);
+                
+                // Hide Google login button, show linked account info
+                const linkSection = document.getElementById('link-account-section');
+                const linkedInfo = document.getElementById('linked-account-info');
+                
+                if (linkSection) linkSection.style.display = 'none';
+                if (linkedInfo) {
+                    linkedInfo.style.display = 'block';
+                    document.getElementById('google-linked-name').textContent = userData.name;
+                    document.getElementById('google-linked-email').textContent = userData.email;
+                    
+                    // Add logout functionality
+                    document.getElementById('btn-logout').addEventListener('click', () => {
+                        localStorage.removeItem('user');
+                        window.location.reload();
+                    });
+                }
+            }
+            
+            // Setup Google Auth Client
+            const googleBtn = document.getElementById('google-auth-btn');
+            if (googleBtn) {
+                googleBtn.addEventListener('click', () => {
+                    try {
+                        if (!tokenClient) {
+                            tokenClient = google.accounts.oauth2.initTokenClient({
+                                client_id: GOOGLE_CLIENT_ID,
+                                scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/user.birthday.read https://www.googleapis.com/auth/user.gender.read',
+                                callback: handleAuthResponse
+                            });
+                        }
+                        tokenClient.requestAccessToken();
+                    } catch (err) {
+                        console.error("Google Identity Services not loaded properly", err);
+                        alert("Google login is still loading or failed to load. Please try again.");
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

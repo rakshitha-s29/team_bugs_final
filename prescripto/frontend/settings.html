@@ -22,12 +22,12 @@
                 </div>
             </a>
             <ul class="nav-links">
-                <li><a href="/dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
-                <li><a href="/upload"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Prescription</a></li>
-                <li><a href="/medicines"><i class="fa-solid fa-pills"></i> Medicine List</a></li>
-                <li><a href="/history"><i class="fa-solid fa-clock-rotate-left"></i> Prescription History</a></li>
-                <li><a href="/profile"><i class="fa-regular fa-user"></i> Profile</a></li>
-                <li class="active"><a href="/settings"><i class="fa-solid fa-language"></i> Language Settings</a></li>
+                <li><a href="/dashboard"><i class="fa-solid fa-chart-pie"></i> <span data-i18n="navDashboard">Dashboard</span></a></li>
+                <li><a href="/upload"><i class="fa-solid fa-cloud-arrow-up"></i> <span data-i18n="navUpload">Upload Prescription</span></a></li>
+                <li><a href="/medicines"><i class="fa-solid fa-pills"></i> <span data-i18n="navMedicine">Medicine List</span></a></li>
+                <li><a href="/history"><i class="fa-solid fa-clock-rotate-left"></i> <span data-i18n="navHistory">Prescription History</span></a></li>
+                <li><a href="/profile"><i class="fa-regular fa-user"></i> <span data-i18n="navProfile">Profile</span></a></li>
+                <li class="active"><a href="/settings"><i class="fa-solid fa-language"></i> <span data-i18n="navSettings">Language Settings</span></a></li>
             </ul>
         </aside>
 
@@ -117,18 +117,18 @@
                 <div class="panel settings-panel" style="margin-top: 2rem; padding: 3rem;">
                     <div class="panel-header"
                         style="margin-bottom: 2rem; border-bottom: 1px solid var(--clr-light-blue); padding-bottom: 1rem;">
-                        <h2 style="font-size: 1.8rem; color: var(--clr-dark-blue);">Localization & Language Settings
+                        <h2 data-i18n="settingsTitle" style="font-size: 1.8rem; color: var(--clr-dark-blue);">Localization & Language Settings
                         </h2>
                     </div>
 
                     <div style="max-width: 600px; font-size: 1.1rem;">
                         <div style="margin-bottom: 2rem;">
-                            <label
+                            <label data-i18n="displayLangLabel"
                                 style="display: block; font-weight: 600; margin-bottom: 0.8rem; color: var(--clr-dark);">Display
                                 Language</label>
-                            <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 1rem;">Choose the
+                            <p data-i18n="displayLangDesc" style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 1rem;">Choose the
                                 primary language for the application interface.</p>
-                            <select class="language-selector"
+                            <select id="page-lang-selector" class="language-selector"
                                 style="width: 100%; padding: 1rem; font-size: 1.1rem; border: 2px solid var(--clr-light-blue); border-radius: 8px;">
                                 <option value="en" selected>English (US)</option>
                                 <option value="hi">हिंदी (Hindi)</option>
@@ -139,10 +139,10 @@
                         </div>
 
                         <div style="margin-bottom: 3rem;">
-                            <label
+                            <label data-i18n="voiceLangLabel"
                                 style="display: block; font-weight: 600; margin-bottom: 0.8rem; color: var(--clr-dark);">Voice
                                 Output Language</label>
-                            <p style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 1rem;">Select the
+                            <p data-i18n="voiceLangDesc" style="color: var(--clr-gray); font-size: 0.9rem; margin-bottom: 1rem;">Select the
                                 language to be used for Text-to-Speech schedule reading.</p>
                             <div style="display: flex; gap: 1rem; align-items: center;">
                                 <select class="language-selector"
@@ -153,12 +153,12 @@
                                 </select>
                                 <button class="btn-primary"
                                     style="background: var(--clr-light-blue); color: var(--clr-blue);"><i
-                                        class="fa-solid fa-volume-high"></i> Test</button>
+                                        class="fa-solid fa-volume-high"></i> <span data-i18n="testBtn">Test</span></button>
                             </div>
                         </div>
 
                         <div style="padding-top: 2rem; border-top: 1px solid var(--clr-light-blue);">
-                            <button class="btn-primary"
+                            <button data-i18n="saveBtn" class="btn-primary"
                                 style="padding: 1rem 2.5rem; font-size: 1.1rem; width: 100%;">Save Settings</button>
                         </div>
                     </div>

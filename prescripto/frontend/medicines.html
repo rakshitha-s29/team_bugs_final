@@ -22,12 +22,12 @@
                 </div>
             </a>
             <ul class="nav-links">
-                <li><a href="/dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
-                <li><a href="/upload"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Prescription</a></li>
-                <li class="active"><a href="/medicines"><i class="fa-solid fa-pills"></i> Medicine List</a></li>
-                <li><a href="/history"><i class="fa-solid fa-clock-rotate-left"></i> Prescription History</a></li>
-                <li><a href="/profile"><i class="fa-regular fa-user"></i> Profile</a></li>
-                <li><a href="/settings"><i class="fa-solid fa-language"></i> Language Settings</a></li>
+                <li><a href="/dashboard"><i class="fa-solid fa-chart-pie"></i> <span data-i18n="navDashboard">Dashboard</span></a></li>
+                <li><a href="/upload"><i class="fa-solid fa-cloud-arrow-up"></i> <span data-i18n="navUpload">Upload Prescription</span></a></li>
+                <li class="active"><a href="/medicines"><i class="fa-solid fa-pills"></i> <span data-i18n="navMedicine">Medicine List</span></a></li>
+                <li><a href="/history"><i class="fa-solid fa-clock-rotate-left"></i> <span data-i18n="navHistory">Prescription History</span></a></li>
+                <li><a href="/profile"><i class="fa-regular fa-user"></i> <span data-i18n="navProfile">Profile</span></a></li>
+                <li><a href="/settings"><i class="fa-solid fa-language"></i> <span data-i18n="navSettings">Language Settings</span></a></li>
             </ul>
         </aside>
 
@@ -39,7 +39,7 @@
                     <button id="sidebar-toggle" class="menu-btn"><i class="fa-solid fa-bars"></i></button>
                     <div class="search-bar">
                         <i class="fa-solid fa-search"></i>
-                        <input type="text" placeholder="Search medicines, reminders...">
+                        <input type="text" data-i18n-placeholder="searchPlaceholder" placeholder="Search medicines, reminders...">
                     </div>
                 </div>
                 <div class="header-right">
@@ -116,7 +116,7 @@
                 <!-- Expanded Medicine Tracker -->
                 <div class="panel tracker-panel" style="margin-top: 2rem; padding: 2rem;">
                     <div class="panel-header" style="margin-bottom: 2rem;">
-                        <h2 style="font-size: 1.8rem; color: var(--clr-dark-blue);">Today's Intake Tracker</h2>
+                        <h2 style="font-size: 1.8rem; color: var(--clr-dark-blue);" data-i18n="trackerTitle">Today's Intake Tracker</h2>
                         <span class="date-badge" id="current-date"
                             style="font-size: 1.2rem; padding: 0.5rem 1rem;">Today</span>
                     </div>
@@ -125,7 +125,7 @@
                         <div class="tracker-item" style="padding: 1.5rem; border: 2px solid var(--clr-light-blue);">
                             <div class="tracker-info">
                                 <h4 style="font-size: 1.3rem; margin-bottom: 0.5rem;">Paracetamol <span
-                                        class="badge-time" style="font-size: 0.9rem;">Morning</span></h4>
+                                        class="badge-time" style="font-size: 0.9rem;" data-i18n="timeMorning">Morning</span></h4>
                                 <p style="font-size: 1.1rem;">Fever relief - Take 1 tablet</p>
                             </div>
                             <label class="custom-checkbox">
@@ -136,7 +136,7 @@
                         <div class="tracker-item" style="padding: 1.5rem; border: 2px solid var(--clr-light-blue);">
                             <div class="tracker-info">
                                 <h4 style="font-size: 1.3rem; margin-bottom: 0.5rem;">Amoxicillin <span
-                                        class="badge-time" style="font-size: 0.9rem;">Afternoon</span></h4>
+                                        class="badge-time" style="font-size: 0.9rem;" data-i18n="timeAfternoon">Afternoon</span></h4>
                                 <p style="font-size: 1.1rem;">Antibiotic - Take after food</p>
                             </div>
                             <label class="custom-checkbox">
@@ -147,7 +147,7 @@
                         <div class="tracker-item" style="padding: 1.5rem; border: 2px solid var(--clr-light-blue);">
                             <div class="tracker-info">
                                 <h4 style="font-size: 1.3rem; margin-bottom: 0.5rem;">Vitamin D <span class="badge-time"
-                                        style="font-size: 0.9rem;">Night</span></h4>
+                                        style="font-size: 0.9rem;" data-i18n="timeNight">Night</span></h4>
                                 <p style="font-size: 1.1rem;">Bone health - Before sleep</p>
                             </div>
                             <label class="custom-checkbox">
